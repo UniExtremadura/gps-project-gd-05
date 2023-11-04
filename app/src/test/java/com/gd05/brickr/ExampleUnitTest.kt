@@ -1,4 +1,4 @@
-package es.unex.giiis.proyectogps
+package com.gd05.brickr
 
 import org.junit.Test
 

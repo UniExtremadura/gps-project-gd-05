@@ -1,4 +1,4 @@
-package es.unex.giiis.proyectogps
+package com.gd05.brickr
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("es.unex.giiis.proyectogps", appContext.packageName)
+        assertEquals("com.gd05.brickr", appContext.packageName)
     }
 }

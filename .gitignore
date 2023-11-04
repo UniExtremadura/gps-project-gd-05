@@ -8,9 +8,7 @@
 .DS_Store
 /build
 /captures
-.externalNativeBuild
 .cxx
-local.properties
 
 ### AndroidStudio ###
 # Covers files to be ignored for android development using Android Studio.

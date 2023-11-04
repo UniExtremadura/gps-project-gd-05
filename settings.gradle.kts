@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ProyectoGPS"
+rootProject.name = "Brickr"
 include(":app")
  
