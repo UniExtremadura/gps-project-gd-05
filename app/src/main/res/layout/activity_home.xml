@@ -16,6 +16,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintVertical_bias="0.0"
         app:navGraph="@navigation/bottom_bar_nav_graph" />
 
@@ -26,5 +27,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_menu" />
 
+    <!-- TODO Checkear el theme -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/Toolbar"
+        android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/toolbar_home"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

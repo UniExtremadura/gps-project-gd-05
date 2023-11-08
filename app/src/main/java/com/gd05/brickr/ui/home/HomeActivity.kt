@@ -48,7 +48,11 @@ class HomeActivity : AppCompatActivity() {
                 R.id.InventoryFragment
             )
         )
-
+        /**We link the toolbar(our instance) to the ActionBar(Class from androidX)-->*/
+        setSupportActionBar(binding.toolbar)
+        /**We link the ActionBar(from androidX) to the navController(define in this app from androidX)*/
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        /**The text for the ToolBar will be the label of the botton_bar_nav_graph.xml(Define in strings.xml)*/
 
     }
 
@@ -59,6 +63,18 @@ class HomeActivity : AppCompatActivity() {
 
 
     /**This method is in charge of inflate the menu*/
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.toolbar_home, menu)
+
+        val searchItem = menu?.findItem(R.id.action_search) /**We find the search item*/
+        val searchView = searchItem?.actionView as SearchView /**We cast the searchItem to SearchView*/
+
+        // Configure the search info and add any event listeners.
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    /**This method is in charge of handle the click on the menu*/
 
 
 
