@@ -23,7 +23,9 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     /** We define the navController val in charge of handle everything related to navigation
      * we assign the nav_host_fragment we define in activity_home and returns as NavHostFragment*/
-
+    private val navController by lazy {
+        (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,10 +34,31 @@ class HomeActivity : AppCompatActivity() {
 
 
 
+        setUpUI()
+        setUpListeners()
+    }
+
+    fun setUpUI() {
+        /**We link the bottonNavigation with the NavController*/
+        binding.bottomNavigation.setupWithNavController(navController)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.FavoriteFragment,
+                R.id.SearchFragment,
+                R.id.InventoryFragment
+            )
+        )
+
+
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp(appBarConfiguration)
+                || super.onSupportNavigateUp()
     }
 
 
-
+    /**This method is in charge of inflate the menu*/
 
 
 
