@@ -23,9 +23,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     /** We define the navController val in charge of handle everything related to navigation
      * we assign the nav_host_fragment we define in activity_home and returns as NavHostFragment*/
-    private val navController by lazy {
-        (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,59 +32,11 @@ class HomeActivity : AppCompatActivity() {
 
 
 
-        setUpUI()
-        setUpListeners()
-    }
-
-    fun setUpUI() {
-        /**We link the bottonNavigation with the NavController*/
-        binding.bottomNavigation.setupWithNavController(navController)
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.FavoriteFragment,
-                R.id.SearchFragment,
-                R.id.InventoryFragment
-            )
-        )
-        /**We link the toolbar(our instance) to the ActionBar(Class from androidX)-->*/
-        setSupportActionBar(binding.toolbar)
-        /**We link the ActionBar(from androidX) to the navController(define in this app from androidX)*/
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        /**The text for the ToolBar will be the label of the botton_bar_nav_graph.xml(Define in strings.xml)*/
-
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
     }
 
 
-    /**This method is in charge of inflate the menu*/
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.toolbar_home, menu)
 
-        val searchItem = menu?.findItem(R.id.action_search) /**We find the search item*/
-        val searchView = searchItem?.actionView as SearchView /**We cast the searchItem to SearchView*/
 
-        // Configure the search info and add any event listeners.
-
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    /**This method is in charge of handle the click on the menu*/
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_settings -> {
-            // User chooses the "Settings" item. Show the app settings UI.
-            Toast.makeText(this, "Settings option", Toast.LENGTH_SHORT).show()
-            true
-        }
-        else -> {
-            // The user's action isn't recognized.
-            // Invoke the superclass to handle it.
-            super.onOptionsItemSelected(item)
-        }
-    }
 
 
     fun setUpListeners() {
