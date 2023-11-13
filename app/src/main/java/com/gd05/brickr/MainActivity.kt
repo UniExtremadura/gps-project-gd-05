@@ -22,6 +22,9 @@ class MainActivity : AppCompatActivity() {
         // Uncomment this to force dark mode [for testing]
         // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
+        // Uncomment this to force dark mode [for testing]
+        // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
