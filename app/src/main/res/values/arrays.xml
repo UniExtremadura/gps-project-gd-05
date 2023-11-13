@@ -1,0 +1,15 @@
+<resources>
+    <!-- Reply Preference -->
+    <!-- Hay que cambiarlo, este fichero de arrays guarda los valores de la lista de tamaños de letra de preferencias -->
+    <string-array name="lettersize_entries">
+        <item>pequeña</item>
+        <item>mediana</item>
+        <item>grande</item>
+    </string-array>
+
+    <string-array name="lettersize_values">
+        <item>Pequeña</item>
+        <item>Mediana</item>
+        <item>Grande</item>
+    </string-array>
+</resources>

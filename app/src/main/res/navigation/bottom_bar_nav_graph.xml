@@ -9,6 +9,10 @@
     <!-- The ids of the destiny fragments (bottom_menu.xml)
     has to be the same that the
     ids of the navigation graph(bottom_bar_nav_graph.xml) -->
+    <action
+        android:id="@+id/action_home_to_settingsFragment"
+        app:destination="@id/settingsFragment" />
+
     <fragment
         android:id="@+id/FavoriteFragment"
         android:name="com.gd05.brickr.ui.home.FavoriteFragment"
@@ -26,4 +30,8 @@
         android:name="com.gd05.brickr.ui.home.InventoryFragment"
         android:label="@string/inventory_option"
         tools:layout="@layout/fragment_inventory" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.gd05.brickr.ui.home.SettingsFragment"
+        android:label="Ajustes" />
 </navigation>

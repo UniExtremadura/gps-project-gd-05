@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/change_theme">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/change_theme"
+            android:title="@string/theme_colour" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Ajustes adicionales">
+
+        <ListPreference
+            android:defaultValue="Normal"
+            android:entries="@array/lettersize_entries"
+            android:entryValues="@array/lettersize_values"
+            android:key="letter_size"
+            android:title="Tamaño de letra" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

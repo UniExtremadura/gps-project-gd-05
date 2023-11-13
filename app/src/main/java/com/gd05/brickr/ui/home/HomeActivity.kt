@@ -18,7 +18,7 @@ import com.gd05.brickr.R
 import com.gd05.brickr.databinding.ActivityHomeBinding
 
 /** HomeActivity is a class that define the Activity where we are going to deploy different fragments */
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity(){
     private lateinit var binding: ActivityHomeBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     /** We define the navController val in charge of handle everything related to navigation
@@ -78,7 +78,8 @@ class HomeActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_settings -> {
             // User chooses the "Settings" item. Show the app settings UI.
-            Toast.makeText(this, "Settings option", Toast.LENGTH_SHORT).show()
+            val action = SearchFragmentDirections.actionHomeToSettingsFragment()
+            navController.navigate(action)
             true
         }
         else -> {
