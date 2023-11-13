@@ -3,10 +3,4 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="favorite_option">Favoritos</string>
-    <string name="search_option">Búsqueda</string>
-    <string name="inventory_option">Inventario</string>
-    <string name="hello_blank_fragment">Mostrando Fragmento en blanco</string>
-    <string name="action_search">Búsqueda\n</string>
-    <string name="action_settings">Ajustes</string>
 </resources>
