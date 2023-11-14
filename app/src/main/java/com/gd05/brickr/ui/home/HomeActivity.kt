@@ -1,12 +1,13 @@
 package com.gd05.brickr.ui.home
 
 import android.content.Context
-import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -18,24 +19,42 @@ import com.gd05.brickr.R
 import com.gd05.brickr.databinding.ActivityHomeBinding
 
 /** HomeActivity is a class that define the Activity where we are going to deploy different fragments */
-class HomeActivity : AppCompatActivity(){
+class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
+
     /** We define the navController val in charge of handle everything related to navigation
      * we assign the nav_host_fragment we define in activity_home and returns as NavHostFragment*/
     private val navController by lazy {
         (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-
+        setUpTheme()
         setUpUI()
         setUpListeners()
+    }
+
+    fun setUpTheme(){
+        val sp = getSharedPreferences("com.gd05.brickr_preferences", Context.MODE_PRIVATE)
+
+        // Dark mode theme
+        if (sp.getBoolean(SettingsFragment.DARK_MODE_KEY, false))
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        else
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+        // Text size
+        when(sp.getInt(SettingsFragment.TEXT_SIZE_KEY, 1)){
+            0 -> {setTheme(R.style.Theme_Brickr_Small)}
+            1 -> {setTheme(R.style.Theme_Brickr_Medium)}
+            2 -> {setTheme(R.style.Theme_Brickr_Large)}
+        }
     }
 
     fun setUpUI() {
@@ -66,8 +85,11 @@ class HomeActivity : AppCompatActivity(){
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_home, menu)
 
-        val searchItem = menu?.findItem(R.id.action_search) /**We find the search item*/
-        val searchView = searchItem?.actionView as SearchView /**We cast the searchItem to SearchView*/
+        val searchItem = menu?.findItem(R.id.action_search)
+
+        /**We find the search item*/
+        val searchView = searchItem?.actionView as SearchView
+        /**We cast the searchItem to SearchView*/
 
         // Configure the search info and add any event listeners.
 
@@ -82,6 +104,7 @@ class HomeActivity : AppCompatActivity(){
             navController.navigate(action)
             true
         }
+
         else -> {
             // The user's action isn't recognized.
             // Invoke the superclass to handle it.

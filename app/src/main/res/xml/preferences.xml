@@ -5,18 +5,19 @@
         android:layout_height="wrap_content"
         android:title="@string/change_theme">
         <SwitchPreference
+            android:key="dark_mode_key"
             android:defaultValue="false"
-            android:key="@string/change_theme"
             android:title="@string/theme_colour" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Ajustes adicionales">
 
-        <ListPreference
-            android:defaultValue="Normal"
-            android:entries="@array/lettersize_entries"
-            android:entryValues="@array/lettersize_values"
-            android:key="letter_size"
-            android:title="Tamaño de letra" />
+    <PreferenceCategory
+        android:title="Text Size Settings">
+        <SeekBarPreference
+            android:dialogTitle="Adjust Text Size"
+            android:key="text_size_key"
+            android:max="2"
+            android:progress="1"
+            android:title="Text Size"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
