@@ -13,4 +13,14 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
 
+    <style name="Theme.Brickr.Small" parent="Theme.Brickr">
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="Theme.Brickr.Medium" parent="Theme.Brickr">
+        <item name="android:textSize">26sp</item>
+    </style>
+    <style name="Theme.Brickr.Large" parent="Theme.Brickr">
+        <item name="android:textSize">30sp</item>
+    </style>
+
 </resources>
