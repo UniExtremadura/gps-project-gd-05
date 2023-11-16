@@ -13,4 +13,31 @@ import com.gd05.brickr.model.BrickSetWithBricks
 @Dao
 interface BrickDao {
 
+    @Query("SELECT * FROM brick")
+    suspend fun getAllBricks(): List<Brick>
+
+    @Query("SELECT * FROM brick WHERE brickId = :id")
+    suspend fun findById(id: Int): Brick
+
+    //OnConflictStrategy.REPLACE indica que si se intenta añadir un elemento con la misma clave primaria
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(brick: Brick)
+
+    @Delete
+    suspend fun delete(show: Brick)
+
+    @Transaction
+    @Query("SELECT * FROM BrickSet where brickSetId = :brickSetId")
+    suspend fun getBrickSetWithBricks(brickSetId: Int): BrickSetWithBricks
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertBrickSetBrick(crossRef: BrickSetBrickCrossRef)
+
+    //Inserta una pieza y la relaciona con un brickset, transaccion para que se haga las dos cosas o ninguna
+    @Transaction
+    suspend fun insertAndRelate(brick: Brick, setId: Int) {
+        insert(brick)
+        insertBrickSetBrick(BrickSetBrickCrossRef(setId, brick.brickId))
+    }
+
 }

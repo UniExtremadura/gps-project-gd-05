@@ -9,4 +9,17 @@ import com.gd05.brickr.model.Category
 @Dao
 interface CategoryDao {
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCategory(category: Category)
+
+    @Query("SELECT * FROM Category WHERE categoryId = :categoryId")
+    suspend fun getCategoryById(categoryId: Int): Category?
+
+    @Query("SELECT * FROM Category")
+    suspend fun getAllCategories(): List<Category>
+
+    @Query("DELETE FROM Category")
+    suspend fun deleteAllCategories()
+
+
 }
