@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -16,12 +17,14 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 
 import com.gd05.brickr.R
+import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.databinding.ActivityHomeBinding
 
 /** HomeActivity is a class that define the Activity where we are going to deploy different fragments */
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var db: BrickrDatabase
 
     /** We define the navController val in charge of handle everything related to navigation
      * we assign the nav_host_fragment we define in activity_home and returns as NavHostFragment*/
@@ -32,13 +35,16 @@ class HomeActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        db = BrickrDatabase.getInstance(applicationContext)!!
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setUpTheme()
         setUpUI()
         setUpListeners()
+
     }
+
 
     fun setUpTheme(){
         val sp = getSharedPreferences("com.gd05.brickr_preferences", Context.MODE_PRIVATE)
