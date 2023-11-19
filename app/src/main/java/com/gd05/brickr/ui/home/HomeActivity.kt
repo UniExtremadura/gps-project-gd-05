@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
@@ -17,9 +18,10 @@ import androidx.navigation.ui.setupWithNavController
 
 import com.gd05.brickr.R
 import com.gd05.brickr.databinding.ActivityHomeBinding
+import com.gd05.brickr.model.Brick
 
 /** HomeActivity is a class that define the Activity where we are going to deploy different fragments */
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickListener {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -110,6 +112,10 @@ class HomeActivity : AppCompatActivity() {
             // Invoke the superclass to handle it.
             super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onBrickClick(brick: Brick){
+        Toast.makeText(this, "Brick ${brick.name} clicked", Toast.LENGTH_SHORT).show()
     }
 
 
