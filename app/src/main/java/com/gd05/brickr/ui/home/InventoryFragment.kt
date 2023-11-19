@@ -73,7 +73,7 @@ class InventoryFragment : Fragment() {
         adapter = InventoryAdapter(
             bricks = dummyBricks,
             onClick = {
-                Toast.makeText(context, "Click on: " + it.name, Toast.LENGTH_SHORT).show()
+                listener.onBrickClick(it)
             },
             onLongClick = {
                 Toast.makeText(

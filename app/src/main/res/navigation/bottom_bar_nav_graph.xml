@@ -41,8 +41,8 @@
     <fragment
         android:id="@+id/brickDetailFragment"
         android:name="com.gd05.brickr.ui.home.BrickDetailFragment"
-        android:label="fragment_brick_detail"
-        tools:layout="@layout/fragment_brick_detail" >
+        android:label="@string/fragment_brick_detail"
+        tools:layout="@layout/fragment_brick_detail">
         <argument
             android:name="brick"
             app:argType="com.gd05.brickr.model.Brick" />

@@ -90,17 +90,6 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         /**We link the ActionBar(from androidX) to the navController(define in this app from androidX)*/
         setupActionBarWithNavController(navController, appBarConfiguration)
         /**The text for the ToolBar will be the label of the botton_bar_nav_graph.xml(Define in strings.xml)*/
-
-        // Hide toolbar and bottom navigation when in brick detail fragment
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if(destination.id == R.id.brickDetailFragment) {
-                binding.toolbar.menu.clear()
-                binding.bottomNavigation.visibility = View.GONE
-            } else {
-                binding.toolbar.visibility = View.VISIBLE
-                binding.bottomNavigation.visibility = View.VISIBLE
-            }
-        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
