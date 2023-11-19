@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
@@ -90,6 +91,16 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         setupActionBarWithNavController(navController, appBarConfiguration)
         /**The text for the ToolBar will be the label of the botton_bar_nav_graph.xml(Define in strings.xml)*/
 
+        // Hide toolbar and bottom navigation when in brick detail fragment
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if(destination.id == R.id.brickDetailFragment) {
+                binding.toolbar.menu.clear()
+                binding.bottomNavigation.visibility = View.GONE
+            } else {
+                binding.toolbar.visibility = View.VISIBLE
+                binding.bottomNavigation.visibility = View.VISIBLE
+            }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -130,7 +141,8 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     }
 
     override fun onBrickClick(brick: Brick){
-        Toast.makeText(this, "Brick ${brick.name} clicked", Toast.LENGTH_SHORT).show()
+        val action = InventoryFragmentDirections.actionInventoryFragmentToBrickDetailFragment(brick)
+        navController.navigate(action)
     }
 
 
