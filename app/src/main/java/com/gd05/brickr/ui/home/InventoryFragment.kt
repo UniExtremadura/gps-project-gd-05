@@ -96,7 +96,7 @@ class InventoryFragment : Fragment() {
         adapter = InventoryAdapter(
             bricks = inventoryBricks,
             onClick = {
-                //listener.onBrickClick(it)
+                listener.onBrickClick(it)
             },
             onLongClick = {
                 Toast.makeText(

@@ -9,9 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.gd05.brickr.R
+import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.databinding.FragmentBrickDetailBinding
+import kotlinx.coroutines.launch
 
 private const val TAG = "BrickDetailFragment"
 
@@ -24,6 +27,7 @@ class BrickDetailFragment : Fragment() {
 
     private var _binding: FragmentBrickDetailBinding? = null
     private val binding get() = _binding!!
+    private  lateinit var db: BrickrDatabase
 
     private val args: BrickDetailFragmentArgs by navArgs()
 
@@ -33,6 +37,19 @@ class BrickDetailFragment : Fragment() {
     ): View {
         _binding = FragmentBrickDetailBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    private fun getCategory(categoryId: Int): String {
+        var categoryName: String = ""
+
+        lifecycleScope.launch {
+            db = BrickrDatabase.getInstance(requireContext())!!
+            val category = db.categoryDao().getCategoryById(categoryId)
+            categoryName = category?.categoryName ?: "Unknown"
+            binding.brickDetailsCategory.text = categoryName
+        }
+
+        return categoryName
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,6 +63,7 @@ class BrickDetailFragment : Fragment() {
         binding.brickDetailsId.text = "#${brick.brickId.toString()}"
         binding.brickDetailsIdText.text = "#${brick.brickId.toString()}"
         binding.brickDetailsAmount.text = brick.amount.toString()
+        binding.brickDetailsCategory.text = brick.categoryId?.let { getCategory(it) }
         binding.brickDetailsRebrickableButton.setOnClickListener {
             val urlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(brick.brickUrl))
             startActivity(urlIntent)
