@@ -99,11 +99,34 @@ class InventoryFragment : Fragment() {
                 listener.onBrickClick(it)
             },
             onLongClick = {
+                loadInventory()
                 Toast.makeText(
                     context,
                     "Long click on: " + it.name,
                     Toast.LENGTH_SHORT
                 ).show()
+            },
+            onAddClick = {
+                lifecycleScope.launch {
+                    it.amount++
+                    db.brickDao().insert(it)
+                    loadInventory()
+                }
+            },
+            onRemoveClick = {
+                lifecycleScope.launch {
+                    if(it.amount > 1){
+                        it.amount--
+                        db.brickDao().insert(it)
+                        loadInventory()
+                    }
+                }
+            },
+
+            onDestroyClick = {
+                lifecycleScope.launch {
+                    loadInventory()
+                }
             },
             context = context
         )

@@ -36,6 +36,6 @@ data class Brick(
     val brickImgUrl: String?,
 
     /** Brick amount in inventory **/
-    val amount: Int
+    var amount: Int
 
 ) : Serializable

@@ -74,6 +74,30 @@ class BrickDetailFragment : Fragment() {
         // TODO: Load correct image
         binding.coverImg.setImageResource(R.drawable.dummy_brick_bright_light_orange)
         Log.d(TAG, "Showing ${brick.name} details")
+
+        binding.brickDetailsAdd.setOnClickListener {
+            lifecycleScope.launch {
+                brick.amount++
+                db.brickDao().insert(brick)
+                binding.brickDetailsAmount.text = brick.amount.toString()
+
+            }
+        }
+
+        binding.brickDetailsRemove.setOnClickListener {
+            lifecycleScope.launch {
+                if (brick.amount > 1) {
+                    brick.amount--
+                    db.brickDao().insert(brick)
+                    binding.brickDetailsAmount.text = brick.amount.toString()
+                }
+            }
+        }
+
+        binding.brickDetailsDestroy.setOnClickListener {
+
+        }
+
     }
 
 
