@@ -15,25 +15,25 @@ import java.io.Serializable
 data class Brick(
     /** Brick's identification number **/
     @PrimaryKey
-    val brickId: Int,
+    val brickId: String,
 
     /** Brick's readable name **/
-    val name: String,
+    val name: String?,
 
     /** Brick's category identification number **/
-    val categoryId: Int,
+    val categoryId: Int?,
 
     /** Year when the Brick was released **/
-    val yearFrom: Int,
+    val yearFrom: Int?,
 
     /** Year when the Brick was discontinued **/
-    val yearTo: Int,
+    val yearTo: Int?,
 
     /** Brick's Rebrickable URL **/
-    val brickUrl: String,
+    val brickUrl: String?,
 
     /** Brick's image URL **/
-    val brickImgUrl: String,
+    val brickImgUrl: String?,
 
     /** Brick amount in inventory **/
     val amount: Int

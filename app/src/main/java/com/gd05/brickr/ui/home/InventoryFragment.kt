@@ -7,11 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gd05.brickr.R
+import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.databinding.FragmentInventoryBinding
 import com.gd05.brickr.dummy.dummyBricks
 import com.gd05.brickr.model.Brick
+import com.gd05.brickr.model.Category
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,9 +34,15 @@ class InventoryFragment : Fragment() {
         fun onBrickClick(brick: Brick)
     }
 
+    //TODO declaramos la variable que va a contener la base de datos
+    private lateinit var db: BrickrDatabase
+
     private var _binding: FragmentInventoryBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: InventoryAdapter
+
+    //TODO variable para almacenar los favoritos del usuario por ahora vacia
+    private var inventoryBricks: List<Brick> = emptyList()
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -48,6 +58,7 @@ class InventoryFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        db = BrickrDatabase.getInstance(context)!!
         if (context is OnInventoryClickListener) {
             listener = context
         } else {
@@ -64,16 +75,28 @@ class InventoryFragment : Fragment() {
         return binding.root
     }
 
+    private fun loadDatabase(){
+        lifecycleScope.launch {
+            var cat = Category(9, "prueba")
+            db.categoryDao().insertCategory(cat)
+            var brickExample = Brick("5", "prueba", 9, 2002, 2006, "b", "a", 5)
+            db.brickDao().insert(brickExample)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //TODO Metodos para cargar la base de datos y el inventario, eliminar solo loadDatabase cuando se implemente la API
+        loadDatabase()
+        loadInventory()
         setUpRecyclerView()
     }
 
     private fun setUpRecyclerView() {
         adapter = InventoryAdapter(
-            bricks = dummyBricks,
+            bricks = inventoryBricks,
             onClick = {
-                listener.onBrickClick(it)
+                //listener.onBrickClick(it)
             },
             onLongClick = {
                 Toast.makeText(
@@ -81,12 +104,22 @@ class InventoryFragment : Fragment() {
                     "Long click on: " + it.name,
                     Toast.LENGTH_SHORT
                 ).show()
-            })
+            },
+            context = context
+        )
         with(binding) {
                 rvInventoryList.layoutManager = LinearLayoutManager(context)
                 rvInventoryList.adapter = adapter
             }
         android.util.Log.d("InventoryFragment", "setUpRecyclerView")
+    }
+
+    private fun loadInventory(){
+        lifecycleScope.launch {
+            //TODO metodo para obtener las piezas del inventario
+            inventoryBricks = db.brickDao().getInventoryBricks()
+            adapter.updateData(inventoryBricks)
+        }
     }
 
     override fun onDestroyView() {

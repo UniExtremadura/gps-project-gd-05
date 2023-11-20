@@ -45,18 +45,9 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         setUpTheme()
         setUpUI()
         setUpListeners()
-        //TODO llamada al metodo de prueba
-        pruebaInser()
-    }
-    //TODO metodo de prueba para verificar que la BD se ha creado correctamente
-    private fun pruebaInser() {
-        lifecycleScope.launchWhenStarted {
-            val categoryDao = db.categoryDao()
-            val newCategory = com.gd05.brickr.model.Category(0, "New Category")
-            categoryDao.insertCategory(newCategory)
-        }
 
     }
+
 
     fun setUpTheme(){
         val sp = getSharedPreferences("com.gd05.brickr_preferences", Context.MODE_PRIVATE)

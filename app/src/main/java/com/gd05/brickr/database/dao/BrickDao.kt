@@ -16,8 +16,11 @@ interface BrickDao {
     @Query("SELECT * FROM brick")
     suspend fun getAllBricks(): List<Brick>
 
+    @Query("SELECT * FROM brick WHERE amount > 0")
+    suspend fun getInventoryBricks(): List<Brick>
+
     @Query("SELECT * FROM brick WHERE brickId = :id")
-    suspend fun findById(id: Int): Brick
+    suspend fun findById(id: String): Brick
 
     //OnConflictStrategy.REPLACE indica que si se intenta añadir un elemento con la misma clave primaria
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -28,14 +31,14 @@ interface BrickDao {
 
     @Transaction
     @Query("SELECT * FROM BrickSet where brickSetId = :brickSetId")
-    suspend fun getBrickSetWithBricks(brickSetId: Int): BrickSetWithBricks
+    suspend fun getBrickSetWithBricks(brickSetId: String): BrickSetWithBricks
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertBrickSetBrick(crossRef: BrickSetBrickCrossRef)
 
     //Inserta una pieza y la relaciona con un brickset, transaccion para que se haga las dos cosas o ninguna
     @Transaction
-    suspend fun insertAndRelate(brick: Brick, setId: Int) {
+    suspend fun insertAndRelate(brick: Brick, setId: String) {
         insert(brick)
         insertBrickSetBrick(BrickSetBrickCrossRef(setId, brick.brickId))
     }

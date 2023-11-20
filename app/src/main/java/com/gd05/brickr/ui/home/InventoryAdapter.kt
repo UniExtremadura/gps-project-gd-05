@@ -1,5 +1,7 @@
 package com.gd05.brickr.ui.home
 
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -9,14 +11,16 @@ import com.gd05.brickr.model.Brick
 
 
 class InventoryAdapter(
-    private val bricks: List<Brick>,
+    private var bricks: List<Brick>,
     private val onClick: (brick: Brick) -> Unit,
-    private val onLongClick: (title: Brick) -> Unit
+    private val onLongClick: (title: Brick) -> Unit,
+    private val context: Context?
 ) : RecyclerView.Adapter<InventoryAdapter.BrickViewHolder>() {
     class BrickViewHolder(
         private val binding: InventoryItemListBinding,
         private val onClick: (brick: Brick) -> Unit,
         private val onLongClick: (title: Brick) -> Unit,
+
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(brick: Brick, totalItems: Int) {
             with(binding) {
@@ -49,5 +53,11 @@ class InventoryAdapter(
 
     override fun onBindViewHolder(holder: BrickViewHolder, position: Int) {
         holder.bind(bricks[position], bricks.size)
+    }
+
+    //TODO metodo para actualizar los datos del adapter
+    fun updateData(newBricks: List<Brick>) {
+        bricks = newBricks
+        notifyDataSetChanged()
     }
 }

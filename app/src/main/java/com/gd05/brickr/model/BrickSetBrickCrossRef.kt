@@ -17,6 +17,6 @@ import androidx.room.ForeignKey
     ]
 )
 data class BrickSetBrickCrossRef(
-    val brickSetId: Int,
-    val brickId: Int
+    val brickSetId: String,
+    val brickId: String
 )
