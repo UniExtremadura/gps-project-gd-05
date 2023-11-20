@@ -6,7 +6,6 @@
     <string name="favorite_option">Favoritos</string>
     <string name="search_option">Búsqueda</string>
     <string name="inventory_option">Inventario</string>
-    <string name="fragment_brick_detail">Detalles</string>
     <string name="hello_blank_fragment">Mostrando Fragmento en blanco</string>
     <string name="action_search">Búsqueda\n</string>
     <string name="action_settings">Ajustes</string>

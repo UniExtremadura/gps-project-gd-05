@@ -29,22 +29,9 @@
         android:id="@+id/InventoryFragment"
         android:name="com.gd05.brickr.ui.home.InventoryFragment"
         android:label="@string/inventory_option"
-        tools:layout="@layout/fragment_inventory" >
-        <action
-            android:id="@+id/action_InventoryFragment_to_brickDetailFragment"
-            app:destination="@id/brickDetailFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_inventory" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.gd05.brickr.ui.home.SettingsFragment"
         android:label="Ajustes" />
-    <fragment
-        android:id="@+id/brickDetailFragment"
-        android:name="com.gd05.brickr.ui.home.BrickDetailFragment"
-        android:label="@string/fragment_brick_detail"
-        tools:layout="@layout/fragment_brick_detail">
-        <argument
-            android:name="brick"
-            app:argType="com.gd05.brickr.model.Brick" />
-    </fragment>
 </navigation>

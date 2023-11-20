@@ -2,7 +2,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("androidx.navigation.safeargs.kotlin")
-    id("com.google.devtools.ksp")
 }
 
 android {
@@ -41,30 +40,6 @@ android {
 }
 
 dependencies {
-
-    val room_version = "2.5.0"
-
-    implementation("androidx.room:room-runtime:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
-
-    // To use Kotlin Symbol Processing (KSP)
-    ksp("androidx.room:room-compiler:$room_version")
-
-    // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
-
-    // optional - Test helpers
-    testImplementation("androidx.room:room-testing:$room_version")
-
-
-    implementation("androidx.preference:preference-ktx:1.2.1")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
-    implementation("com.github.bumptech.glide:glide:5.0.0-rc01")
-
-
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
@@ -79,4 +54,9 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
+
 }
