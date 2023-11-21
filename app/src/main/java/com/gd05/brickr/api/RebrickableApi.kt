@@ -2,9 +2,13 @@ package com.gd05.brickr.api
 
 import com.example.example.ColorApi
 import com.example.example.ColorsResponse
+import com.gd05.brickr.data.api.ApiCategorie
 import com.gd05.brickr.data.api.ApiSet
+import com.gd05.brickr.data.api.ApiTheme
 import com.gd05.brickr.data.api.BricksResponse
+import com.gd05.brickr.data.api.CategoriesResponse
 import com.gd05.brickr.data.api.SearchResponse
+import com.gd05.brickr.data.api.ThemesResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -86,11 +90,34 @@ interface RebrickableAPI {
         @Query("key") key: String,
         @Path("part_num") brickNum: String
     ): Call<BricksResponse>
-}
 
-class APIError(message: String, cause: Throwable?) : Throwable(message, cause)
+    @GET("/api/v3/lego/part_categories/")
+    fun getCategories(
+        @Query("key") key: String,
+        @Query("page") page: Integer?,
+        @Query("page_size") pageSize: Integer?,
+        @Query("ordering") ordering: String?,
+    ): Call<CategoriesResponse>
 
-interface APICallback {
-    fun onCompleted(tvShows: List<Any?>)
-    fun onError(cause: Throwable)
+    @GET("/api/v3/lego/part_categories/{id}/")
+    fun getCategoryById(
+        @Query("key") key: String,
+        @Path("id") id: String,
+        @Query("ordering") ordering: String?,
+    ): Call<ApiCategorie>
+
+    @GET("/api/v3/lego/themes/")
+    fun getThemes(
+        @Query("key") key: String,
+        @Query("page") page: Integer?,
+        @Query("page_size") pageSize: Integer?,
+        @Query("ordering") ordering: String?,
+    ): Call<ThemesResponse>
+
+    @GET("/api/v3/lego/themes/{id}/")
+    fun getThemeById(
+        @Query("key") key: String,
+        @Path("id") id: Integer,
+        @Query("ordering") ordering: String?,
+    ): Call<ApiTheme>
 }

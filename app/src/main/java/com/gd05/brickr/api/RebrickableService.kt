@@ -2,15 +2,20 @@ package com.gd05.brickr.api
 
 import com.example.example.ColorApi
 import com.example.example.ColorsResponse
+import com.gd05.brickr.data.api.ApiCategorie
+import com.gd05.brickr.data.api.ApiTheme
 import com.gd05.brickr.data.api.BricksRequest
 import com.gd05.brickr.data.api.BricksResponse
+import com.gd05.brickr.data.api.CategoriesRequest
+import com.gd05.brickr.data.api.CategoriesResponse
+import com.gd05.brickr.data.api.CategoryByIdRequest
 import com.gd05.brickr.data.api.ColorsRequest
 import com.gd05.brickr.data.api.SearchRequest
 import com.gd05.brickr.data.api.SearchResponse
+import com.gd05.brickr.data.api.ThemeByIdRequest
+import com.gd05.brickr.data.api.ThemesRequest
+import com.gd05.brickr.data.api.ThemesResponse
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
 
 object RebrickableService {
 
@@ -72,5 +77,27 @@ object RebrickableService {
 
     fun searchBrickById(setNum: String): Call<BricksResponse> {
         return api.searchBrickById(authKey, setNum)
+    }
+
+    fun getCategories(req: CategoriesRequest
+    ): Call<CategoriesResponse> {
+        return api.getCategories(authKey, req.page, req.pageSize, req.ordering)
+    }
+
+    fun getCategoryById(
+        req: CategoryByIdRequest
+    ): Call<ApiCategorie> {
+        return api.getCategoryById(authKey, req.id, req.ordering)
+    }
+
+    fun getThemes(
+        req: ThemesRequest
+    ): Call<ThemesResponse>{
+        return api.getThemes(authKey, req.page,req.pageSize,req.ordering)
+    }
+
+    fun getThemeById(req: ThemeByIdRequest
+    ): Call<ApiTheme>{
+        return api.getThemeById(authKey, req.id, req.ordering)
     }
 }

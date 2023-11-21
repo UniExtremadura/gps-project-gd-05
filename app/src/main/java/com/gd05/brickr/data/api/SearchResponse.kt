@@ -9,7 +9,7 @@ data class SearchResponse (
 )
 
 data class ApiSet (
-    @SerializedName("set_num"          ) var setNum         : String? = null,
+    @SerializedName("set_num"          ) var setNum         : String,
     @SerializedName("name"             ) var name           : String? = null,
     @SerializedName("year"             ) var year           : Int?    = null,
     @SerializedName("theme_id"         ) var themeId        : Int?    = null,
