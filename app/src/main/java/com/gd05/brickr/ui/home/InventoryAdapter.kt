@@ -60,9 +60,9 @@ class InventoryAdapter(
                     onRemoveClick(brick)
                 }
 
-            //  inventoryDestroy.setOnClickListener {
-            //     onDestroyClick(brick)
-            //}
+                inventoryDestroy.setOnClickListener {
+                    onDestroyClick(brick)
+                }
 
             }
         }
