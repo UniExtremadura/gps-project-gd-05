@@ -7,7 +7,9 @@ import com.gd05.brickr.data.api.ApiSet
 import com.gd05.brickr.data.api.ApiTheme
 import com.gd05.brickr.data.api.BricksResponse
 import com.gd05.brickr.data.api.CategoriesResponse
+import com.gd05.brickr.data.api.SearchBrickByIdResponse
 import com.gd05.brickr.data.api.SearchResponse
+import com.gd05.brickr.data.api.SearchSetByIdResponse
 import com.gd05.brickr.data.api.ThemesResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -38,22 +40,22 @@ interface RebrickableAPI {
     @GET("/api/v3/lego/colors")
     fun getColors(
         @Query("key") key: String,
-        @Query("page") page: Integer?,
-        @Query("page_size") pageSize: Integer?,
+        @Query("page") page: Int?,
+        @Query("page_size") pageSize: Int?,
         @Query("ordering") ordering: String?
     ): Call<ColorsResponse>
 
     @GET("/api/v3/lego/colors/{id}")
     fun getColorById(
-        @Query("key") key: String,
-        @Path("id") setNum: String
+        @Path("id") setNum: Int,
+        @Query("key") key: String
     ): Call<ColorApi>
 
     @GET("/api/v3/lego/sets/")
     fun searchSet(
         @Query("key") key: String,
-        @Query("page") page: Integer?,
-        @Query("page_size") pageSize: Integer?,
+        @Query("page") page: Int?,
+        @Query("page_size") pageSize: Int?,
         @Query("theme_id") themeId: String?,
         @Query("min_year") minYear: Double?,
         @Query("max_year") maxYear: Double?,
@@ -62,17 +64,17 @@ interface RebrickableAPI {
         @Query("search") search: String
     ): Call<SearchResponse>
 
-    @GET("/api/v3/lego/sets/{setNum}")
+    @GET("/api/v3/lego/sets/{setNum}/")
     fun searchSetById(
-        @Query("key") key: String,
-        @Path("setNum") setNum: String
-    ): Call<ApiSet>
+        @Path("setNum") setNum: String,
+        @Query("key") key: String
+    ): Call<SearchSetByIdResponse>
 
     @GET("/api/v3/lego/parts/")
     fun searchBricks(
         @Query("key") key: String,
-        @Query("page") page: Integer?,
-        @Query("page_size") pageSize: Integer?,
+        @Query("page") page: Int?,
+        @Query("page_size") pageSize: Int?,
         @Query("part_num") partNum: String?,
         @Query("part_nums") partNums: String?,
         @Query("part_cat_id") partCatId: String?,
@@ -85,39 +87,39 @@ interface RebrickableAPI {
         @Query("search") search: String,
     ): Call<BricksResponse>
 
-    @GET("/api/v3/lego/parts/{part_num}")
+    @GET("/api/v3/lego/parts/{part_num}/")
     fun searchBrickById(
-        @Query("key") key: String,
-        @Path("part_num") brickNum: String
-    ): Call<BricksResponse>
+        @Path("part_num") brickNum: String,
+        @Query("key") key: String
+    ): Call<SearchBrickByIdResponse>
 
     @GET("/api/v3/lego/part_categories/")
     fun getCategories(
         @Query("key") key: String,
-        @Query("page") page: Integer?,
-        @Query("page_size") pageSize: Integer?,
+        @Query("page") page: Int?,
+        @Query("page_size") pageSize: Int?,
         @Query("ordering") ordering: String?,
     ): Call<CategoriesResponse>
 
     @GET("/api/v3/lego/part_categories/{id}/")
     fun getCategoryById(
+        @Path("id") id: Int,
         @Query("key") key: String,
-        @Path("id") id: String,
-        @Query("ordering") ordering: String?,
+        @Query("ordering") ordering: String?
     ): Call<ApiCategorie>
 
     @GET("/api/v3/lego/themes/")
     fun getThemes(
         @Query("key") key: String,
-        @Query("page") page: Integer?,
-        @Query("page_size") pageSize: Integer?,
+        @Query("page") page: Int?,
+        @Query("page_size") pageSize: Int?,
         @Query("ordering") ordering: String?,
     ): Call<ThemesResponse>
 
     @GET("/api/v3/lego/themes/{id}/")
     fun getThemeById(
+        @Path("id") id: Int,
         @Query("key") key: String,
-        @Path("id") id: Integer,
         @Query("ordering") ordering: String?,
     ): Call<ApiTheme>
 }

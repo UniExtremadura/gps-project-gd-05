@@ -1,12 +1,10 @@
 package com.gd05.brickr.data.api
 
-import android.icu.number.IntegerWidth
-
 data class BricksRequest(
     // A page number within the paginated result set.
-    var page: Integer? = null,
+    var page: Int? = null,
     // Number of results to return per page.
-    var pageSize: Integer? = null,
+    var pageSize: Int? = null,
     var partNum: String? = null,
     var partNums: String? = null,
     var partCatId: String? = null,
