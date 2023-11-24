@@ -111,7 +111,8 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     }
 
     override fun onSearchBrickClick(brick: Brick){
-        // TODO: Navigation to BrickDetailFragment
+        val action = SearchFragmentDirections.actionSearchFragmentToBrickDetailFragment(brick)
+        navController.navigate(action)
     }
 
 
