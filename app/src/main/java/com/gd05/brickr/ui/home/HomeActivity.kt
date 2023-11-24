@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -24,7 +25,7 @@ import com.gd05.brickr.databinding.ActivityHomeBinding
 import com.gd05.brickr.model.Brick
 
 /** HomeActivity is a class that define the Activity where we are going to deploy different fragments */
-class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickListener {
+class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickListener, SearchFragment.OnSearchClickListener {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var db: BrickrDatabase
@@ -88,22 +89,6 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
                 || super.onSupportNavigateUp()
     }
 
-
-    /**This method is in charge of inflate the menu*/
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.toolbar_home, menu)
-
-        val searchItem = menu?.findItem(R.id.action_search)
-
-        /**We find the search item*/
-        val searchView = searchItem?.actionView as SearchView
-        /**We cast the searchItem to SearchView*/
-
-        // Configure the search info and add any event listeners.
-
-        return super.onCreateOptionsMenu(menu)
-    }
-
     /**This method is in charge of handle the click on the menu*/
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_settings -> {
@@ -123,6 +108,10 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     override fun onBrickClick(brick: Brick){
         val action = InventoryFragmentDirections.actionInventoryFragmentToBrickDetailFragment(brick)
         navController.navigate(action)
+    }
+
+    override fun onSearchBrickClick(brick: Brick){
+        // TODO: Navigation to BrickDetailFragment
     }
 
 

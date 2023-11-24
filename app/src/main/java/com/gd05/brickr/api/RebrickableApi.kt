@@ -3,7 +3,6 @@ package com.gd05.brickr.api
 import com.example.example.ColorApi
 import com.example.example.ColorsResponse
 import com.gd05.brickr.data.api.ApiCategorie
-import com.gd05.brickr.data.api.ApiSet
 import com.gd05.brickr.data.api.ApiTheme
 import com.gd05.brickr.data.api.BricksResponse
 import com.gd05.brickr.data.api.CategoriesResponse

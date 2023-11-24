@@ -3,7 +3,7 @@ package com.gd05.brickr.data.api
 import com.google.gson.annotations.SerializedName
 
 data class SearchBrickByIdResponse(
-    @SerializedName("part_num") var partNum: String? = null,
+    @SerializedName("part_num") var partNum: String,
     @SerializedName("name") var name: String? = null,
     @SerializedName("part_cat_id") var partCatId: Int? = null,
     @SerializedName("year_from") var yearFrom: Int? = null,
@@ -16,6 +16,7 @@ data class SearchBrickByIdResponse(
     @SerializedName("external_ids") var externalIds: SearchBrickByIdExternalIds? = SearchBrickByIdExternalIds(),
     @SerializedName("print_of") var printOf: String? = null
 )
+
 data class SearchBrickByIdExternalIds(
     @SerializedName("BrickLink") var BrickLink: ArrayList<String> = arrayListOf(),
     @SerializedName("BrickOwl") var BrickOwl: ArrayList<String> = arrayListOf(),

@@ -4,6 +4,7 @@ import com.gd05.brickr.data.api.ApiCategorie
 import com.gd05.brickr.data.api.ApiSet
 import com.gd05.brickr.data.api.ApiTheme
 import com.gd05.brickr.data.api.BrickApi
+import com.gd05.brickr.data.api.SearchBrickByIdResponse
 import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.BrickSet
 import com.gd05.brickr.model.Category
@@ -46,4 +47,16 @@ fun ApiCategorie.toCategory(): Category {
         categoryId = id,
         categoryName = name
     )
+}
+
+fun SearchBrickByIdResponse.toBrick(): Brick? {
+    return Brick(
+        brickId = partNum,
+        name = name,
+        categoryId = partCatId,
+        brickUrl = partUrl,
+        brickImgUrl = partImgUrl,
+        amount = 0,
+        yearFrom = yearFrom,
+        yearTo = yearTo)
 }
