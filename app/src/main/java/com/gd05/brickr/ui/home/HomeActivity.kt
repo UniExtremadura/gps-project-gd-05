@@ -23,6 +23,8 @@ import com.gd05.brickr.R
 import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.databinding.ActivityHomeBinding
 import com.gd05.brickr.model.Brick
+import com.gd05.brickr.model.Category
+import kotlinx.coroutines.launch
 
 /** HomeActivity is a class that define the Activity where we are going to deploy different fragments */
 class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickListener, SearchFragment.OnSearchClickListener {
@@ -43,10 +45,22 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //carga de datos falsos de prueba
+        loadDatabase()
         setUpTheme()
         setUpUI()
         setUpListeners()
 
+    }
+
+    //carga de datos falsos de prueba en la base de datos
+    private fun loadDatabase(){
+        lifecycleScope.launch {
+            var cat = Category(9, "prueba")
+            db.categoryDao().insertCategory(cat)
+            var brickExample = Brick("5", "prueba", 9, 2002, 2006, "b", "a", 5)
+            db.brickDao().insert(brickExample)
+        }
     }
 
 

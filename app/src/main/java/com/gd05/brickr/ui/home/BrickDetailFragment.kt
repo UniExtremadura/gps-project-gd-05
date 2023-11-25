@@ -95,7 +95,9 @@ class BrickDetailFragment : Fragment() {
         }
 
         binding.brickDetailsDestroy.setOnClickListener {
-
+            lifecycleScope.launch {
+                db.brickDao().delete(brick)
+            }
         }
 
     }

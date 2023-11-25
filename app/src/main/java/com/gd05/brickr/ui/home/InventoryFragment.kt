@@ -75,19 +75,9 @@ class InventoryFragment : Fragment() {
         return binding.root
     }
 
-    private fun loadDatabase(){
-        lifecycleScope.launch {
-            var cat = Category(9, "prueba")
-            db.categoryDao().insertCategory(cat)
-            var brickExample = Brick("5", "prueba", 9, 2002, 2006, "b", "a", 5)
-            db.brickDao().insert(brickExample)
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //TODO Metodos para cargar la base de datos y el inventario, eliminar solo loadDatabase cuando se implemente la API
-        loadDatabase()
         loadInventory()
         setUpRecyclerView()
     }
@@ -125,7 +115,7 @@ class InventoryFragment : Fragment() {
 
             onDestroyClick = {
                 lifecycleScope.launch {
-                    loadInventory()
+                   db.brickDao().delete(it)
                 }
             },
             context = context
