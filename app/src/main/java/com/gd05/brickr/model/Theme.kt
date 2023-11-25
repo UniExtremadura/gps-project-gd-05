@@ -9,7 +9,7 @@ import java.io.Serializable
 data class Theme(
     /** Theme's identification number **/
     @PrimaryKey
-    val themeId: Int,
+    val themeId: Int?,
     /** Theme's readable name **/
-    val themeName: String,
+    val themeName: String?,
 ) : Serializable
