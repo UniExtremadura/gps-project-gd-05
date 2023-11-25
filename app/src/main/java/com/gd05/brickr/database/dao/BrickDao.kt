@@ -22,8 +22,12 @@ interface BrickDao {
     @Query("SELECT * FROM brick WHERE amount > 0 AND categoryId = :category ORDER BY name ASC")
     suspend fun getFilteredInventoryBricks(category: Int): List<Brick>
 
-    @Query("SELECT * FROM brick WHERE amount > 0 AND name LIKE '%' || :name || '%' ORDER BY name ASC")
+    @Query("SELECT * FROM brick WHERE amount > 0 AND name LIKE :name || '%' ORDER BY name ASC")
     suspend fun getSearchedInventoryBricks(name: String): List<Brick>
+
+    @Query("SELECT * FROM brick WHERE amount > 0 AND name LIKE :query || '%' AND (:category IS NULL OR categoryId = :category) ORDER BY name ASC")
+    suspend fun getSearchedFilteredInventoryBricks(query: String, category: Int?): List<Brick>
+
 
     @Query("SELECT * FROM brick WHERE brickId = :id ORDER BY name ASC")
     suspend fun findById(id: String): Brick

@@ -43,6 +43,7 @@ class InventoryFragment : Fragment() {
     //TODO declaramos la variable que va a contener la base de datos
     private lateinit var db: BrickrDatabase
     private lateinit var searchView: SearchView
+    private var category: Int? = null
 
 
     private var _binding: FragmentInventoryBinding? = null
@@ -65,7 +66,37 @@ class InventoryFragment : Fragment() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.toolbar_home, menu)
+        val searchItem = menu.findItem(R.id.action_search)
+        searchView = searchItem.actionView as SearchView
+        Log.d("Se ha alcanzado este punto", "onCreateOptionsMenu")
 
+        // Configura un listener para manejar los eventos de búsqueda
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // Este método se llama cuando se envía la búsqueda (p. ej., al presionar "Enter").
+                // Puedes realizar la lógica de filtrado aquí.
+                Log.d("SearchSubmit", "Query submitted: $query")
+                loadSearchInventory(query, category)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Este método se llama cuando el texto de búsqueda cambia.
+                // Puedes realizar la lógica de filtrado en tiempo real aquí.
+                loadSearchInventory(newText, category)
+                return true
+            }
+        })
+        // Muestra el teclado virtual cuando se expande el SearchView
+        searchView.setOnSearchClickListener {
+            val inputMethodManager =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.showSoftInput(searchView.findFocus(), InputMethodManager.SHOW_IMPLICIT)
+        }
+
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -94,6 +125,7 @@ class InventoryFragment : Fragment() {
                 // Lógica según la chip seleccionada
                 handleChipSelection(chip)
             } else {
+                category = null
                 loadInventory()
             }
         }
@@ -102,32 +134,21 @@ class InventoryFragment : Fragment() {
     }
 
     private fun handleChipSelection(chip: Chip) {
+          category  = when (chip.id) {
+            R.id.chip1 -> 1
+            R.id.chip2 -> 11
+            R.id.chip3 -> 9
+            R.id.chip4 -> 23
+            else -> null
+        }
 
-        when (chip.id) {
-            R.id.chip1 -> {
-                loadFilterInventory(1)
-                Toast.makeText(requireContext(), "Seleccionaste: ${chip.text}", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            R.id.chip2 -> {
-                loadFilterInventory(11)
-                Toast.makeText(requireContext(), "Seleccionaste: ${chip.text}", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            R.id.chip3 -> {
-                loadFilterInventory(9)
-                Toast.makeText(requireContext(), "Seleccionaste: ${chip.text}", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            R.id.chip4 -> {
-                loadFilterInventory(23)
-                Toast.makeText(requireContext(), "Seleccionaste: ${chip.text}", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
+        if (category != null) {
+            loadFilterInventory(category)
+            Toast.makeText(requireContext(), "Seleccionaste: ${chip.text}", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            // Ninguna chip seleccionada, carga el inventario sin filtrar por categoría
+            loadInventory()
         }
     }
 
@@ -184,17 +205,25 @@ class InventoryFragment : Fragment() {
     }
 
     //TODO metodo que llama a la bd para filtrar los bricks por categoria
-    private fun loadFilterInventory(category: Int) {
+    private fun loadFilterInventory(category: Int?) {
         lifecycleScope.launch {
-            inventoryBricks = db.brickDao().getFilteredInventoryBricks(category)
+            inventoryBricks = if (category != null) {
+                db.brickDao().getFilteredInventoryBricks(category)
+            } else {
+                db.brickDao().getInventoryBricks()
+            }
             adapter.updateData(inventoryBricks)
         }
     }
 
-    private fun loadSearchInventory(query: String?) {
+    private fun loadSearchInventory(query: String?, category: Int?) {
         if (query != null) {
             lifecycleScope.launch {
-                inventoryBricks = db.brickDao().getSearchedInventoryBricks(query)
+                inventoryBricks = if (category != null) {
+                    db.brickDao().getSearchedFilteredInventoryBricks(query, category)
+                } else {
+                    db.brickDao().getSearchedInventoryBricks(query)
+                }
                 adapter.updateData(inventoryBricks)
             }
         }

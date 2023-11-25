@@ -56,9 +56,22 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     //carga de datos falsos de prueba en la base de datos
     private fun loadDatabase(){
         lifecycleScope.launch {
-            var cat = Category(9, "prueba")
+            var cat = Category(9, "Baseplates")
             db.categoryDao().insertCategory(cat)
-            var brickExample = Brick("5", "prueba", 9, 2002, 2006, "b", "a", 5)
+
+            cat = Category(11, "Bricks")
+            db.categoryDao().insertCategory(cat)
+
+            cat = Category(1, "Plates Special")
+            db.categoryDao().insertCategory(cat)
+
+            var brickExample = Brick("4", "prueba1", 9, 2002, 2006, "b", "a", 5)
+            db.brickDao().insert(brickExample)
+            brickExample = Brick("4545", "prueba2", 11, 2002, 20065, "b", "a", 5)
+            db.brickDao().insert(brickExample)
+            brickExample = Brick("5", "prueba3", 1, 202, 20061, "b", "a", 3)
+            db.brickDao().insert(brickExample)
+            brickExample = Brick("8", "AAprueba", 1, 202, 20061, "b", "a", 3)
             db.brickDao().insert(brickExample)
         }
     }
