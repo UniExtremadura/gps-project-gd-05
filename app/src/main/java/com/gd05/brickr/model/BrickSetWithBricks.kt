@@ -14,6 +14,6 @@ class BrickSetWithBricks (
         //Indicamos que la tabla intermedia es BrickSetBrickCrossRef
         associateBy = Junction(BrickSetBrickCrossRef::class)
     )
-    val shows: List<Brick>
+    val bricks: List<Brick>
 
 )

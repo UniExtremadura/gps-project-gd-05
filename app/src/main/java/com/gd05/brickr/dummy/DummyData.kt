@@ -4,7 +4,7 @@ import com.gd05.brickr.model.Brick
 
 val dummyBricks: List<Brick> = listOf(
     Brick(
-        26047,
+        "26047",
         "Plate Special 1 x 1 Rounded with Handle",
         9,
         2016,
@@ -14,7 +14,7 @@ val dummyBricks: List<Brick> = listOf(
         1
     ),
     Brick(
-        26047,
+        "26047",
         "Plate Special 1 x 1 Rounded with Handle",
         9,
         2016,
@@ -24,7 +24,7 @@ val dummyBricks: List<Brick> = listOf(
         1
     ),
     Brick(
-        26047,
+        "26047",
         "Plate Special 1 x 1 Rounded with Handle",
         9,
         2016,
@@ -34,7 +34,7 @@ val dummyBricks: List<Brick> = listOf(
         1
     ),
     Brick(
-        26601,
+        "26601",
         "Wedge Plate 2 x 2 Cut Corner",
         49,
         2016,
@@ -44,7 +44,7 @@ val dummyBricks: List<Brick> = listOf(
         1
     ),
     Brick(
-        26601,
+        "26601",
         "Wedge Plate 2 x 2 Cut Corner",
         49,
         2016,
@@ -54,7 +54,7 @@ val dummyBricks: List<Brick> = listOf(
         1
     ),
     Brick(
-        26601,
+        "26601",
         "Wedge Plate 2 x 2 Cut Corner",
         49,
         2016,
@@ -64,7 +64,7 @@ val dummyBricks: List<Brick> = listOf(
         1
     ),
     Brick(
-        26601,
+        "26601",
         "Wedge Plate 2 x 2 Cut Corner",
         49,
         2016,

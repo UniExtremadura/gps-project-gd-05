@@ -9,7 +9,7 @@ import java.io.Serializable
 data class Category(
     /** Theme's identification number **/
     @PrimaryKey
-    val categoryId: Int,
+    val categoryId: Int?,
     /** Theme's readable name **/
-    val categoryName: String,
+    val categoryName: String?,
 ) : Serializable

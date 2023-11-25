@@ -13,28 +13,28 @@ import java.io.Serializable
 data class BrickSet (
     /** Set's identification number **/
     @PrimaryKey
-    var brickSetId: Int,
+    var brickSetId: String,
 
     /** Set's readable name **/
-    var name: String,
+    var name: String?,
 
     /** Set's year of release **/
-    var year: Int,
+    var year: Int?,
 
     /** Set's theme identification number **/
-    var themeId: Int,
+    var themeId: Int?,
 
     /** Set's number of bricks **/
-    var numParts: Int,
+    var numParts: Int?,
 
     /** Set's image URL **/
-    var setImgUrl: String,
+    var setImgUrl: String?,
 
     /** Set's Rebrickable URL **/
-    var setUrl: String,
+    var setUrl: String?,
 
     /** Set's last modification date **/
-    var lastModifiedDt: String,
+    var lastModifiedDt: String?,
 
     /** Indicates if the set has been added to favorites **/
     var isFavorite: Boolean = false
