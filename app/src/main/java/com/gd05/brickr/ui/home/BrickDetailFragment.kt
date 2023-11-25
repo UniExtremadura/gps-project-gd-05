@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.gd05.brickr.R
 import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.databinding.FragmentBrickDetailBinding
@@ -71,9 +72,12 @@ class BrickDetailFragment : Fragment() {
         }
 
 
-        // TODO: Load correct image
-        binding.coverImg.setImageResource(R.drawable.dummy_brick_bright_light_orange)
-        Log.d(TAG, "Showing ${brick.name} details")
+        context?.let {
+            Glide.with(requireContext())
+                .load(brick.brickImgUrl)
+                .placeholder(R.drawable.brick_placeholder)
+                .into(binding.coverImg)
+        }
 
         binding.brickDetailsAdd.setOnClickListener {
             lifecycleScope.launch {

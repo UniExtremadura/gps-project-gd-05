@@ -92,7 +92,7 @@ class InventoryFragment : Fragment() {
             val chip = group.findViewById<Chip>(checkedId)
             if (chip != null) {
                 // Lógica según la chip seleccionada
-
+                handleChipSelection(chip)
             } else {
                 loadInventory()
             }
@@ -101,7 +101,35 @@ class InventoryFragment : Fragment() {
         setUpRecyclerView()
     }
 
+    private fun handleChipSelection(chip: Chip) {
 
+        when (chip.id) {
+            R.id.chip1 -> {
+                loadFilterInventory(1)
+                Toast.makeText(requireContext(), "Seleccionaste: ${chip.text}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            R.id.chip2 -> {
+                loadFilterInventory(11)
+                Toast.makeText(requireContext(), "Seleccionaste: ${chip.text}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            R.id.chip3 -> {
+                loadFilterInventory(9)
+                Toast.makeText(requireContext(), "Seleccionaste: ${chip.text}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            R.id.chip4 -> {
+                loadFilterInventory(23)
+                Toast.makeText(requireContext(), "Seleccionaste: ${chip.text}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+        }
+    }
 
     private fun setUpRecyclerView() {
         adapter = InventoryAdapter(
