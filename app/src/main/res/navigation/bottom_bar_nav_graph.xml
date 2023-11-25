@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/SearchFragment"
-        android:name="com.gd05.brickr.ui.home.SearchFragment"
+        android:name="com.gd05.brickr.ui.search.SearchFragment"
         android:label="@string/search_option"
         tools:layout="@layout/fragment_search">
         <action
