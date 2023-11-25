@@ -4,14 +4,9 @@ import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.SearchView
-import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -23,7 +18,10 @@ import com.gd05.brickr.R
 import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.databinding.ActivityHomeBinding
 import com.gd05.brickr.model.Brick
+import com.gd05.brickr.model.BrickSet
 import com.gd05.brickr.model.Category
+import com.gd05.brickr.ui.search.SearchFragment
+import com.gd05.brickr.ui.search.SearchFragmentDirections
 import kotlinx.coroutines.launch
 
 /** HomeActivity is a class that define the Activity where we are going to deploy different fragments */
@@ -129,6 +127,10 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         navController.navigate(action)
     }
 
+    override fun onSearchSetClick(set: BrickSet){
+        throw NotImplementedError("Todavia no ha sido implementado")
+        //navController.navigate(action)
+    }
 
     fun setUpListeners() {
         //nothing to do
