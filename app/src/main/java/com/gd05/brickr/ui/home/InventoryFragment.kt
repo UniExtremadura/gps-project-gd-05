@@ -2,11 +2,16 @@ package com.gd05.brickr.ui.home
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gd05.brickr.R
@@ -15,6 +20,7 @@ import com.gd05.brickr.databinding.FragmentInventoryBinding
 import com.gd05.brickr.dummy.dummyBricks
 import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.Category
+import com.google.android.material.chip.Chip
 import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
@@ -36,6 +42,8 @@ class InventoryFragment : Fragment() {
 
     //TODO declaramos la variable que va a contener la base de datos
     private lateinit var db: BrickrDatabase
+    private lateinit var searchView: SearchView
+
 
     private var _binding: FragmentInventoryBinding? = null
     private val binding get() = _binding!!
@@ -50,11 +58,14 @@ class InventoryFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
     }
+
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -77,10 +88,20 @@ class InventoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //TODO Metodos para cargar la base de datos y el inventario, eliminar solo loadDatabase cuando se implemente la API
+        binding.chipGroup.setOnCheckedChangeListener { group, checkedId ->
+            val chip = group.findViewById<Chip>(checkedId)
+            if (chip != null) {
+                // Lógica según la chip seleccionada
+
+            } else {
+                loadInventory()
+            }
+        }
         loadInventory()
         setUpRecyclerView()
     }
+
+
 
     private fun setUpRecyclerView() {
         adapter = InventoryAdapter(
@@ -127,11 +148,27 @@ class InventoryFragment : Fragment() {
         android.util.Log.d("InventoryFragment", "setUpRecyclerView")
     }
 
-    private fun loadInventory(){
+    private fun loadInventory() {
         lifecycleScope.launch {
-            //TODO metodo para obtener las piezas del inventario
             inventoryBricks = db.brickDao().getInventoryBricks()
             adapter.updateData(inventoryBricks)
+        }
+    }
+
+    //TODO metodo que llama a la bd para filtrar los bricks por categoria
+    private fun loadFilterInventory(category: Int) {
+        lifecycleScope.launch {
+            inventoryBricks = db.brickDao().getFilteredInventoryBricks(category)
+            adapter.updateData(inventoryBricks)
+        }
+    }
+
+    private fun loadSearchInventory(query: String?) {
+        if (query != null) {
+            lifecycleScope.launch {
+                inventoryBricks = db.brickDao().getSearchedInventoryBricks(query)
+                adapter.updateData(inventoryBricks)
+            }
         }
     }
 
