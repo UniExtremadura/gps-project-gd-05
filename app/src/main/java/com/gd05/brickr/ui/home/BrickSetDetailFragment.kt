@@ -72,6 +72,36 @@ class BrickSetDetailFragment : Fragment() {
             startActivity(shareIntent)
         }
 
+        binding.toggleFavorite.isChecked = brickSet.isFavorite
+
+        // Set an OnClickListener to handle ToggleButton state changes
+        binding.toggleFavorite.setOnClickListener {
+            // Toggle the isFavorite state when the button is clicked
+            brickSet.isFavorite = !brickSet.isFavorite
+
+            // Update the UI to reflect the new state
+            binding.toggleFavorite.isChecked = brickSet.isFavorite
+
+
+            // You can also perform any additional actions based on the new state here
+            if (brickSet.isFavorite) {
+
+                // Do something when the item is marked as favorite
+                lifecycleScope.launch {
+                    brickSet.isFavorite = true
+                    if(db.themeDao().getThemeById(brickSet.themeId!!) != null){
+                        db.brickSetDao().insert(brickSet)
+                        Toast.makeText(requireContext(), "Marcado como favorito", Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        Toast.makeText(requireContext(), "El set no se encuentra disponible", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+            }
+
+        }
+
 
         context?.let {
             Glide.with(requireContext())
@@ -79,20 +109,6 @@ class BrickSetDetailFragment : Fragment() {
                 .placeholder(R.drawable.brick_placeholder)
                 .into(binding.coverImg)
         }
-
-
-        /*
-        binding.brickDetailsRemove.setOnClickListener {
-            lifecycleScope.launch {
-
-            }
-        }
-
-        binding.brickDetailsDestroy.setOnClickListener {
-            lifecycleScope.launch {
-
-            }
-        }*/
 
     }
 
