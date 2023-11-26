@@ -61,6 +61,16 @@ class BrickSetDetailFragment : Fragment() {
         binding.brickSetDetailsIdText.text = "#${brickSet.brickSetId.toString()}"
         binding.brickSetDetailsTheme.text = brickSet.themeId?.let { getTheme(it) }
         binding.brickSetDetailsNumPartsText.text = brickSet.numParts.toString()
+        binding.shareSetButton.setOnClickListener {
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, "Hey! Check out this set: ${brickSet.name}!\n\n${brickSet.setUrl}")
+                type = "text/plain"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIntent)
+        }
 
 
         context?.let {
