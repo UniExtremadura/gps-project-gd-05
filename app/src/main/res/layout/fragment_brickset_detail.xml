@@ -17,7 +17,7 @@
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_set" />
 
 
     <TextView
@@ -84,7 +84,8 @@
         android:drawableLeft="@android:drawable/btn_star"
         android:textOff=""
         android:textOn=""
-        app:layout_constraintEnd_toStartOf="@+id/puzzle_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cover_img" />
 
     <Button
@@ -92,7 +93,6 @@
         android:layout_width="100dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="10dp"
         android:includeFontPadding="false"
         android:insetTop="0dp"
         android:insetBottom="0dp"
@@ -104,6 +104,26 @@
         app:iconGravity="textEnd"
         app:iconPadding="0dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/toggle_favorite"
+        app:layout_constraintTop_toBottomOf="@+id/cover_img" />
+
+    <Button
+        android:id="@+id/share_set_button"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:includeFontPadding="false"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:icon="@drawable/baseline_send_to_mobile_24"
+        app:iconGravity="textEnd"
+        app:iconPadding="0dp"
+        app:layout_constraintEnd_toStartOf="@+id/toggle_favorite"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cover_img" />
 
     <ScrollView
@@ -215,5 +235,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
