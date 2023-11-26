@@ -128,8 +128,8 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     }
 
     override fun onSearchSetClick(set: BrickSet){
-        //val action = SearchFragmentDirections.actionSearchFragmentToBrickDetailSetDetailFragment(set)
-        //navController.navigate(action)
+        val action = SearchFragmentDirections.actionSearchFragmentToBrickDetailSetDetailFragment(set)
+        navController.navigate(action)
     }
 
     fun setUpListeners() {
