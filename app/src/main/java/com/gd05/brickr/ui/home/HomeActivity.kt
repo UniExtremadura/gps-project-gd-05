@@ -4,14 +4,9 @@ import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.SearchView
-import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -20,14 +15,27 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 
 import com.gd05.brickr.R
+import com.gd05.brickr.api.RebrickableService
+import com.gd05.brickr.data.api.CategoriesRequest
+import com.gd05.brickr.data.api.SearchRequest
+import com.gd05.brickr.data.api.ThemesRequest
+import com.gd05.brickr.data.mapper.toCategory
+import com.gd05.brickr.data.mapper.toSet
+import com.gd05.brickr.data.mapper.toTheme
 import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.databinding.ActivityHomeBinding
 import com.gd05.brickr.model.Brick
-import com.gd05.brickr.model.Category
+import com.gd05.brickr.model.BrickSet
+import com.gd05.brickr.ui.favorite.FavoriteFragmentDirections
+import com.gd05.brickr.ui.search.SearchFragment
+import com.gd05.brickr.ui.search.SearchFragmentDirections
+import com.gd05.brickr.ui.favorite.OnFavoriteClickListener
+import com.gd05.brickr.util.BACKGROUND
 import kotlinx.coroutines.launch
 
 /** HomeActivity is a class that define the Activity where we are going to deploy different fragments */
-class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickListener, SearchFragment.OnSearchClickListener {
+class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickListener, SearchFragment.OnSearchClickListener,
+    OnFavoriteClickListener {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var db: BrickrDatabase
@@ -52,17 +60,6 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         setUpListeners()
 
     }
-
-    //carga de datos falsos de prueba en la base de datos
-    private fun loadDatabase(){
-        lifecycleScope.launch {
-            var cat = Category(9, "prueba")
-            db.categoryDao().insertCategory(cat)
-            var brickExample = Brick("5", "prueba", 9, 2002, 2006, "b", "a", 5)
-            db.brickDao().insert(brickExample)
-        }
-    }
-
 
     fun setUpTheme(){
         val sp = getSharedPreferences("com.gd05.brickr_preferences", Context.MODE_PRIVATE)
@@ -129,9 +126,55 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         navController.navigate(action)
     }
 
+    override fun onSearchSetClick(set: BrickSet){
+        val action = SearchFragmentDirections.actionSearchFragmentToBrickDetailSetDetailFragment(set)
+        navController.navigate(action)
+    }
+
+    private fun loadCategories(){
+        BACKGROUND.submit {
+            val request = CategoriesRequest()
+            RebrickableService.getCategories(request).execute().body().let {
+                val loadedCategories = it?.results?.map { category -> category.toCategory() }
+                lifecycleScope.launch {
+                    loadedCategories?.forEach { category ->
+                        db.categoryDao().insertCategory(category)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadThemes(){
+        BACKGROUND.submit {
+            val request = ThemesRequest()
+            RebrickableService.getThemes(request).execute().body().let {
+                val loadedThemes = it?.results?.map { theme -> theme.toTheme() }
+                lifecycleScope.launch {
+                    loadedThemes?.forEach { theme ->
+                        db.themeDao().insertTheme(theme)
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun loadDatabase(){
+        lifecycleScope.launch {
+            loadCategories()
+            loadThemes()
+        }
+    }
+
 
     fun setUpListeners() {
         //nothing to do
+    }
+
+    override fun onFavoriteClickListener(set: BrickSet) {
+        val action = FavoriteFragmentDirections.actionFavoriteFragmentToBrickDetailSetDetailFragment(set)
+        navController.navigate(action)
     }
 
 }
