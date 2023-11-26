@@ -128,7 +128,7 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     }
 
     override fun onSearchSetClick(set: BrickSet){
-        throw NotImplementedError("Todavia no ha sido implementado")
+        //val action = SearchFragmentDirections.actionSearchFragmentToBrickDetailSetDetailFragment(set)
         //navController.navigate(action)
     }
 
