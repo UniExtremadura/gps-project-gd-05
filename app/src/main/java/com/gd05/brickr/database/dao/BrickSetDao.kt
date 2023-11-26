@@ -11,4 +11,7 @@ interface BrickSetDao {
     @Query("SELECT * FROM brickset WHERE name LIKE :first LIMIT 1")
     suspend fun findByName(first: String): BrickSet
 
+    @Query("SELECT * FROM brickset WHERE isFavorite = 1")
+    suspend fun findFavorites(): List<BrickSet>
+
 }

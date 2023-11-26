@@ -20,12 +20,15 @@ import com.gd05.brickr.databinding.ActivityHomeBinding
 import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.BrickSet
 import com.gd05.brickr.model.Category
+import com.gd05.brickr.ui.favorite.FavoriteFragmentDirections
 import com.gd05.brickr.ui.search.SearchFragment
 import com.gd05.brickr.ui.search.SearchFragmentDirections
+import com.gd05.brickr.ui.favorite.OnFavoriteClickListener
 import kotlinx.coroutines.launch
 
 /** HomeActivity is a class that define the Activity where we are going to deploy different fragments */
-class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickListener, SearchFragment.OnSearchClickListener {
+class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickListener, SearchFragment.OnSearchClickListener,
+    OnFavoriteClickListener {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var db: BrickrDatabase
@@ -134,6 +137,11 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
 
     fun setUpListeners() {
         //nothing to do
+    }
+
+    override fun onFavoriteClickListener(set: BrickSet) {
+        val action = FavoriteFragmentDirections.actionFavoriteFragmentToBrickDetailSetDetailFragment(set)
+        navController.navigate(action)
     }
 
 }
