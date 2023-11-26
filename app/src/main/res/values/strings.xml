@@ -27,4 +27,6 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="theme">Color del tema</string>
     <string name="change_theme">Color del tema</string>
+    <string name="sets">Sets</string>
+    <string name="pieces">Piezas</string>
 </resources>
