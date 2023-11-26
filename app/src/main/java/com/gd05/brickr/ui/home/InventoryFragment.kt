@@ -68,7 +68,7 @@ class InventoryFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar_home, menu)
-        val searchItem = menu.findItem(R.id.action_search)
+        val searchItem = menu.findItem(R.id.search_view)
         searchView = searchItem.actionView as SearchView
         Log.d("Se ha alcanzado este punto", "onCreateOptionsMenu")
 
