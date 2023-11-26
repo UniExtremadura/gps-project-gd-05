@@ -4,29 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_bar_nav_graph"
     app:startDestination="@+id/SearchFragment">
-    <!-- Navigation graph it used to navigate between fragments in the same activity  -->
-    <!-- On the right side of the Design view the var startDestination decides the start fragment -->
-    <!-- The ids of the destiny fragments (bottom_menu.xml)
-    has to be the same that the
-    ids of the navigation graph(bottom_bar_nav_graph.xml) -->
+
     <action
         android:id="@+id/action_home_to_settingsFragment"
         app:destination="@id/settingsFragment" />
 
     <fragment
         android:id="@+id/FavoriteFragment"
-        android:name="com.gd05.brickr.ui.home.FavoriteFragment"
+        android:name="com.gd05.brickr.ui.favorite.FavoriteFragment"
         android:label="@string/favorite_option"
-        tools:layout="@layout/fragment_favorite" />
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_FavoriteFragment_to_brickDetailSetDetailFragment"
+            app:destination="@id/brickDetailSetDetailFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/SearchFragment"
-        android:name="com.gd05.brickr.ui.home.SearchFragment"
+        android:name="com.gd05.brickr.ui.search.SearchFragment"
         android:label="@string/search_option"
         tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_SearchFragment_to_brickDetailFragment"
             app:destination="@id/brickDetailFragment" />
+        <action
+            android:id="@+id/action_SearchFragment_to_brickDetailSetDetailFragment"
+            app:destination="@id/brickDetailSetDetailFragment" />
     </fragment>
 
     <fragment
@@ -51,7 +54,21 @@
             android:name="brick"
             app:argType="com.gd05.brickr.model.Brick" />
     </fragment>
+
+    <fragment
+        android:id="@+id/brickDetailSetDetailFragment"
+        android:name="com.gd05.brickr.ui.home.BrickSetDetailFragment"
+        android:label="@string/fragment_brick_detail"
+        tools:layout="@layout/fragment_brickset_detail">
+        <argument
+            android:name="brickSet"
+            app:argType="com.gd05.brickr.model.BrickSet" />
+    </fragment>
+
+
     <action
         android:id="@+id/action_home_to_SearchFragment"
         app:destination="@id/SearchFragment" />
+
+
 </navigation>

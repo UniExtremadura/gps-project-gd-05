@@ -1,9 +1,8 @@
-package com.gd05.brickr.ui.home
+package com.gd05.brickr.ui.search
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.gd05.brickr.R
@@ -11,12 +10,12 @@ import com.gd05.brickr.databinding.SearchItemListBinding
 import com.gd05.brickr.model.Brick
 
 
-class SearchAdapter(
+class SearchBricksAdapter(
     private var bricks: List<Brick>,
     private val onClick: (brick: Brick) -> Unit,
     private val onLongClick: (title: Brick) -> Unit,
     private val context: Context?
-) : RecyclerView.Adapter<SearchAdapter.BrickViewHolder>() {
+) : RecyclerView.Adapter<SearchBricksAdapter.BrickViewHolder>() {
     class BrickViewHolder(
         private val binding: SearchItemListBinding,
         private val onClick: (brick: Brick) -> Unit,

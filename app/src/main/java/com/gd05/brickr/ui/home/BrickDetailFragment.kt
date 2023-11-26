@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.gd05.brickr.R
 import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.databinding.FragmentBrickDetailBinding
@@ -52,6 +53,19 @@ class BrickDetailFragment : Fragment() {
         return categoryName
     }
 
+    private fun getInventoryAmount(brickId: String ): Int {
+        var brickAmount: Int = 0
+
+        lifecycleScope.launch {
+            db = BrickrDatabase.getInstance(requireContext())!!
+            val brick = db.brickDao().findById(brickId)
+            brickAmount = brick?.amount ?: 0
+            binding.brickDetailsAmount.text = brickAmount.toString()
+        }
+
+        return brickAmount
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val brick = args.brick
@@ -62,7 +76,7 @@ class BrickDetailFragment : Fragment() {
         binding.brickDetailsYearToText.text = brick.yearTo.toString()
         binding.brickDetailsId.text = "#${brick.brickId.toString()}"
         binding.brickDetailsIdText.text = "#${brick.brickId.toString()}"
-        binding.brickDetailsAmount.text = brick.amount.toString()
+        getInventoryAmount(brick.brickId)
         binding.brickDetailsCategory.text = brick.categoryId?.let { getCategory(it) }
         binding.brickDetailsRebrickableButton.setOnClickListener {
             val urlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(brick.brickUrl))
@@ -70,10 +84,12 @@ class BrickDetailFragment : Fragment() {
             Toast.makeText(context, "Opening Rebrickable...", Toast.LENGTH_SHORT).show()
         }
 
-
-        // TODO: Load correct image
-        binding.coverImg.setImageResource(R.drawable.dummy_brick_bright_light_orange)
-        Log.d(TAG, "Showing ${brick.name} details")
+        context?.let {
+            Glide.with(requireContext())
+                .load(brick.brickImgUrl)
+                .placeholder(R.drawable.brick_placeholder)
+                .into(binding.coverImg)
+        }
 
         binding.brickDetailsAdd.setOnClickListener {
             lifecycleScope.launch {
@@ -97,6 +113,8 @@ class BrickDetailFragment : Fragment() {
         binding.brickDetailsDestroy.setOnClickListener {
             lifecycleScope.launch {
                 db.brickDao().delete(brick)
+                brick.amount = 0
+                binding.brickDetailsAmount.text = brick.amount.toString()
             }
         }
 
