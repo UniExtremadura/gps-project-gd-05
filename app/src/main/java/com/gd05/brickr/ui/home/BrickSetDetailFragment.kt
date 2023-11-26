@@ -98,6 +98,18 @@ class BrickSetDetailFragment : Fragment() {
                     }
 
                 }
+            }else {
+                // Do something when the item is unmarked as favorite
+                lifecycleScope.launch {
+                    brickSet.isFavorite = false
+                    if(db.themeDao().getThemeById(brickSet.themeId!!) != null){
+                        db.brickSetDao().delete(brickSet)
+                        Toast.makeText(requireContext(), "Desmarcado de favorito", Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        Toast.makeText(requireContext(), "El set no se encuentra disponible", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
         }
