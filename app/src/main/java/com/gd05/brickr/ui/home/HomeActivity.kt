@@ -15,6 +15,13 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 
 import com.gd05.brickr.R
+import com.gd05.brickr.api.RebrickableService
+import com.gd05.brickr.data.api.CategoriesRequest
+import com.gd05.brickr.data.api.SearchRequest
+import com.gd05.brickr.data.api.ThemesRequest
+import com.gd05.brickr.data.mapper.toCategory
+import com.gd05.brickr.data.mapper.toSet
+import com.gd05.brickr.data.mapper.toTheme
 import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.databinding.ActivityHomeBinding
 import com.gd05.brickr.model.Brick
@@ -22,7 +29,10 @@ import com.gd05.brickr.model.BrickSet
 import com.gd05.brickr.model.Category
 import com.gd05.brickr.ui.search.SearchFragment
 import com.gd05.brickr.ui.search.SearchFragmentDirections
+import com.gd05.brickr.util.BACKGROUND
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** HomeActivity is a class that define the Activity where we are going to deploy different fragments */
 class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickListener, SearchFragment.OnSearchClickListener {
@@ -49,16 +59,6 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         setUpUI()
         setUpListeners()
 
-    }
-
-    //carga de datos falsos de prueba en la base de datos
-    private fun loadDatabase(){
-        lifecycleScope.launch {
-            var cat = Category(9, "prueba")
-            db.categoryDao().insertCategory(cat)
-            var brickExample = Brick("5", "prueba", 9, 2002, 2006, "b", "a", 5)
-            db.brickDao().insert(brickExample)
-        }
     }
 
 
@@ -131,6 +131,43 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         throw NotImplementedError("Todavia no ha sido implementado")
         //navController.navigate(action)
     }
+
+    private fun loadCategories(){
+        BACKGROUND.submit {
+            val request = CategoriesRequest()
+            RebrickableService.getCategories(request).execute().body().let {
+                val loadedCategories = it?.results?.map { category -> category.toCategory() }
+                lifecycleScope.launch {
+                    loadedCategories?.forEach { category ->
+                        db.categoryDao().insertCategory(category)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadThemes(){
+        BACKGROUND.submit {
+            val request = ThemesRequest()
+            RebrickableService.getThemes(request).execute().body().let {
+                val loadedThemes = it?.results?.map { theme -> theme.toTheme() }
+                lifecycleScope.launch {
+                    loadedThemes?.forEach { theme ->
+                        db.themeDao().insertTheme(theme)
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun loadDatabase(){
+        lifecycleScope.launch {
+            loadCategories()
+            loadThemes()
+        }
+    }
+
 
     fun setUpListeners() {
         //nothing to do
