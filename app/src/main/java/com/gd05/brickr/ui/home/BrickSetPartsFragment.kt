@@ -28,7 +28,7 @@ class BrickSetPartsFragment : Fragment() {
     private lateinit var listener: OnBrickSetPartsClickListener
 
     interface OnBrickSetPartsClickListener {
-        fun onBrickSetBricksClick(brick: Brick)
+        fun onBrickSetBricksClick(brick: String)
     }
 
     private var _binding: FragmentBricksetPartsBinding? = null
@@ -118,7 +118,7 @@ class BrickSetPartsFragment : Fragment() {
             bricks = bricksetBricks,
             amounts = amounts,
             onClick = {
-                listener.onBrickSetBricksClick(it)
+                listener.onBrickSetBricksClick(it.brickId!!)
             },
             onLongClick = {
                 Toast.makeText(

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.gd05.brickr.R
@@ -73,6 +74,13 @@ class BrickSetDetailFragment : Fragment() {
         }
 
         binding.toggleFavorite.isChecked = brickSet.isFavorite
+
+        /* Navigate to BrickSetPartsFragment when the user clicks on the "View Parts" button */
+        binding.puzzleButton.setOnClickListener {
+            val action = BrickSetDetailFragmentDirections.actionBrickDetailSetDetailFragmentToBrickSetPartsFragment(brickSet)
+
+            view.findNavController().navigate(action)
+        }
 
         // Set an OnClickListener to handle ToggleButton state changes
         binding.toggleFavorite.setOnClickListener {

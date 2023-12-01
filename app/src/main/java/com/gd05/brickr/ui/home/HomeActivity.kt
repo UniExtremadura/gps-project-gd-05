@@ -18,6 +18,7 @@ import com.gd05.brickr.R
 import com.gd05.brickr.api.RebrickableService
 import com.gd05.brickr.data.api.CategoriesRequest
 import com.gd05.brickr.data.api.ThemesRequest
+import com.gd05.brickr.data.mapper.toBrick
 import com.gd05.brickr.data.mapper.toCategory
 import com.gd05.brickr.data.mapper.toTheme
 import com.gd05.brickr.database.BrickrDatabase
@@ -114,9 +115,19 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         }
     }
 
-    override fun onBrickSetBricksClick(brick: Brick){
-        val action = BrickSetPartsFragmentDirections.actionBrickSetPartsFragmentToBrickDetailFragment(brick)
-        navController.navigate(action)
+    override fun onBrickSetBricksClick(brickId : String){
+        BACKGROUND.submit{
+            RebrickableService.searchBrickById(brickId).execute().body().let {
+                val brick = it?.toBrick()
+                val action = BrickSetPartsFragmentDirections.actionBrickSetPartsFragmentToBrickDetailFragment(brick!!)
+                lifecycleScope.launch {
+                    navController.navigate(action)
+                }
+
+            }
+        }
+        /*val action = BrickSetPartsFragmentDirections.actionBrickSetPartsFragmentToBrickDetailFragment(brick)
+        navController.navigate(action)*/
     }
 
     override fun onInventoryBrickClick(brick: Brick){
