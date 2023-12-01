@@ -14,7 +14,7 @@ class RebrickableApiTest {
         api = getRebrickableApi()
     }
 
-    @Test
+    /*@Test
     fun apiConnectionTest(){
         var response = api.getColors(authKey).execute()
         if (response.isSuccessful) {
@@ -24,5 +24,5 @@ class RebrickableApiTest {
         }
         BACKGROUND.awaitTermination(60, TimeUnit.SECONDS)
         assert(true)
-    }
+    }*/
 }

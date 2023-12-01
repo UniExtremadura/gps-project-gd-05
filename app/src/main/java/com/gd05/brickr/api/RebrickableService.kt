@@ -4,6 +4,7 @@ import com.example.example.ColorApi
 import com.example.example.ColorsResponse
 import com.gd05.brickr.data.api.ApiCategorie
 import com.gd05.brickr.data.api.ApiTheme
+import com.gd05.brickr.data.api.BrickSetBricksResponse
 import com.gd05.brickr.data.api.BricksRequest
 import com.gd05.brickr.data.api.BricksResponse
 import com.gd05.brickr.data.api.CategoriesRequest
@@ -42,6 +43,24 @@ object RebrickableService {
         return api.searchSetById(
             id,
             authKey
+        )
+    }
+
+    fun getSetBricks(setNum: String): Call<BrickSetBricksResponse> {
+        return api.getBrickSetBricks(
+            setNum,
+            authKey,
+            null,
+            null
+        )
+    }
+
+    fun getSetBricks(setNum: String, page: Int?, pageSize: Int?): Call<BrickSetBricksResponse> {
+        return api.getBrickSetBricks(
+            setNum,
+            authKey,
+            page,
+            pageSize
         )
     }
 

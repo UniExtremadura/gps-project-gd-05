@@ -63,12 +63,27 @@
         <argument
             android:name="brickSet"
             app:argType="com.gd05.brickr.model.BrickSet" />
+        <action
+            android:id="@+id/action_brickDetailSetDetailFragment_to_brickSetPartsFragment"
+            app:destination="@id/brickSetPartsFragment" />
     </fragment>
 
 
     <action
         android:id="@+id/action_home_to_SearchFragment"
         app:destination="@id/SearchFragment" />
+    <fragment
+        android:id="@+id/brickSetPartsFragment"
+        android:name="com.gd05.brickr.ui.home.BrickSetPartsFragment"
+        android:label="@string/fragment_brickset_bricks"
+        tools:layout="@layout/fragment_brickset_parts">
+        <argument
+            android:name="brickSet"
+            app:argType="com.gd05.brickr.model.BrickSet" />
+        <action
+            android:id="@+id/action_brickSetPartsFragment_to_brickDetailFragment"
+            app:destination="@id/brickDetailFragment" />
+    </fragment>
 
 
 </navigation>

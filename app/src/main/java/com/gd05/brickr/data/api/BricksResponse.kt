@@ -22,4 +22,3 @@ data class ExternalIds (
     @SerializedName("BrickLink" ) var BrickLink : ArrayList<String> = arrayListOf(),
     @SerializedName("BrickOwl"  ) var BrickOwl  : ArrayList<String> = arrayListOf()
 )
-

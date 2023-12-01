@@ -1,9 +1,12 @@
 package com.gd05.brickr.data.mapper
 
+import com.gd05.brickr.api.RebrickableService
 import com.gd05.brickr.data.api.ApiCategorie
 import com.gd05.brickr.data.api.ApiSet
 import com.gd05.brickr.data.api.ApiTheme
 import com.gd05.brickr.data.api.BrickApi
+import com.gd05.brickr.data.api.BrickSetBricksResponse
+import com.gd05.brickr.data.api.Part
 import com.gd05.brickr.data.api.SearchBrickByIdResponse
 import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.BrickSet
@@ -20,6 +23,24 @@ fun BrickApi.toBrick(): Brick {
         amount = 0,
         yearFrom = yearFrom,
         yearTo = yearTo
+    )
+}
+
+/*
+* fun Part.toBrick(): Brick {
+    RebrickableService.searchBrickById(partNum!!).execute().body()?.let {
+        return it.toBrick()!!
+    }
+}
+* */
+fun Part.toApiBrick(): BrickApi {
+    return BrickApi(
+        partNum = partNum!!,
+        name = name,
+        partCatId = partCatId,
+        partUrl = partUrl,
+        partImgUrl = partImgUrl,
+        printOf = printOf
     )
 }
 
@@ -49,6 +70,7 @@ fun ApiCategorie.toCategory(): Category {
     )
 }
 
+
 fun SearchBrickByIdResponse.toBrick(): Brick? {
     return Brick(
         brickId = partNum,
@@ -58,5 +80,6 @@ fun SearchBrickByIdResponse.toBrick(): Brick? {
         brickImgUrl = partImgUrl,
         amount = 0,
         yearFrom = yearFrom,
-        yearTo = yearTo)
+        yearTo = yearTo
+    )
 }

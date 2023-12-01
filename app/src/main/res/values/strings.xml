@@ -7,6 +7,7 @@
     <string name="search_option">Búsqueda</string>
     <string name="inventory_option">Inventario</string>
     <string name="fragment_brick_detail">Detalles</string>
+    <string name="fragment_brickset_bricks">Piezas</string>
     <string name="hello_blank_fragment">Mostrando Fragmento en blanco</string>
     <string name="action_search">Búsqueda\n</string>
     <string name="action_settings">Ajustes</string>
@@ -14,6 +15,8 @@
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
+    <string name="theme">Color del tema</string>
+    <string name="change_theme">Color del tema</string>
 
     <!-- Messages Preferences -->
     <string name="signature_title">Your signature</string>
@@ -25,8 +28,12 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="theme">Color del tema</string>
-    <string name="change_theme">Color del tema</string>
+
+    <!-- Bricks and Sets -->
     <string name="sets">Sets</string>
     <string name="pieces">Piezas</string>
+    <string name="add_set_bricks">Guardar</string>
+    <string name="remove_set_bricks">Quitar</string>
+    <string name="verify_set_bricks">Verificar</string>
+    <string name="brickset_bricks_loaded">Piezas cargadas</string>
 </resources>

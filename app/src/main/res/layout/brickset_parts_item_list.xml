@@ -32,7 +32,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/inventory_title"
+                android:id="@+id/brickset_part_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -44,39 +44,17 @@
                 app:layout_constraintTop_toTopOf="@id/item_img" />
 
             <TextView
-                android:id="@+id/inventory_id"
+                android:id="@+id/brickset_part_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:text="#26047"
                 android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="@+id/inventory_title"
-                app:layout_constraintTop_toBottomOf="@+id/inventory_title" />
+                app:layout_constraintStart_toStartOf="@+id/brickset_part_title"
+                app:layout_constraintTop_toBottomOf="@+id/brickset_part_title" />
 
             <Button
-                android:id="@+id/inventory_remove"
-                android:layout_width="50dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="5dp"
-                android:includeFontPadding="false"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="-"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                app:iconGravity="textEnd"
-                app:iconPadding="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/inventory_destroy"
-                app:layout_constraintTop_toBottomOf="@+id/inventory_title"
-                tools:text="-" />
-
-            <Button
-                android:id="@+id/inventory_add"
+                android:id="@+id/brickset_part_add"
                 android:layout_width="50dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="5dp"
@@ -93,12 +71,13 @@
                 app:iconGravity="textEnd"
                 app:iconPadding="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/inventory_remove"
-                app:layout_constraintTop_toBottomOf="@+id/inventory_title"
+                app:layout_constraintEnd_toStartOf="@+id/brickset_part_remove"
+                app:layout_constraintTop_toBottomOf="@+id/brickset_part_title"
+                app:layout_constraintVertical_bias="1.0"
                 tools:text="+" />
 
             <Button
-                android:id="@+id/inventory_destroy"
+                android:id="@+id/brickset_part_remove"
                 android:layout_width="50dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="5dp"
@@ -112,23 +91,23 @@
                 app:iconPadding="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/inventory_title" />
+                app:layout_constraintTop_toBottomOf="@+id/brickset_part_title" />
 
             <TextView
-                android:id="@+id/inventory_amount"
+                android:id="@+id/brickset_part_amount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="9dp"
                 android:layout_marginBottom="5dp"
-                android:text="-1"
+                android:text="-1/-1"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/inventory_add"
-                app:layout_constraintStart_toEndOf="@+id/inventory_id"
-                app:layout_constraintTop_toBottomOf="@+id/inventory_title" />
+                app:layout_constraintEnd_toStartOf="@+id/brickset_part_add"
+                app:layout_constraintStart_toEndOf="@+id/brickset_part_id"
+                app:layout_constraintTop_toBottomOf="@+id/brickset_part_title" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

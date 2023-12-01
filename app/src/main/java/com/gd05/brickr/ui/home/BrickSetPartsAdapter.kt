@@ -1,0 +1,79 @@
+package com.gd05.brickr.ui.home
+
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.gd05.brickr.R
+import com.gd05.brickr.databinding.BricksetPartsItemListBinding
+import com.gd05.brickr.model.Brick
+
+class BrickSetPartsAdapter (
+
+private var bricks: List<Brick>,
+private var amounts: Map<String, Int>,
+private val onClick: (brick: Brick) -> Unit,
+private val onLongClick: (title: Brick) -> Unit,
+private val onRemoveClick: (brick: Brick) -> Unit,
+private val onAddClick: (brick: Brick) -> Unit,
+private val context: Context?
+) : RecyclerView.Adapter<BrickSetPartsAdapter.BrickSetPartViewHolder>() {
+    class BrickSetPartViewHolder(
+        private val binding: BricksetPartsItemListBinding,
+        private val onClick: (brick: Brick) -> Unit,
+        private val onLongClick: (title: Brick) -> Unit,
+        private val onAddClick: (brick: Brick) -> Unit,
+        private val onRemoveClick: (brick: Brick) -> Unit,
+        private val context: Context?,
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(brick: Brick, amounts: Map<String, Int>, totalItems: Int) {
+            with(binding) {
+                bricksetPartTitle.text = brick.name
+                bricksetPartId.text = "#${brick.brickId.toString()}"
+                /* TODO: Add needed bricks and owned bricks */
+                bricksetPartAmount.text = "-1 / ${amounts[brick.brickId] ?: -1}";
+
+                /* Add images to bricks */
+                context?.let {
+                    Glide.with(context)
+                        .load(brick.brickImgUrl)
+                        .placeholder(R.drawable.brick_placeholder)
+                        .into(itemImg)
+                }
+
+                cvItem.setOnClickListener {
+                    onClick(brick)
+                }
+                cvItem.setOnLongClickListener {
+                    onLongClick(brick)
+                    true
+                }
+
+                bricksetPartAdd.setOnClickListener {
+                    onAddClick(brick)
+                }
+
+                bricksetPartRemove.setOnClickListener {
+                    onRemoveClick(brick)
+                }
+            }
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BrickSetPartViewHolder {
+        val binding = BricksetPartsItemListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return BrickSetPartViewHolder(binding, onClick, onLongClick, onAddClick, onRemoveClick, context)
+    }
+
+    override fun getItemCount() = bricks.size
+
+    override fun onBindViewHolder(holder: BrickSetPartViewHolder, position: Int) {
+        holder.bind(bricks[position], amounts ,bricks.size)
+    }
+
+    fun updateData(newBricks: List<Brick>) {
+        this.bricks = newBricks
+        notifyDataSetChanged()
+    }
+}
