@@ -32,6 +32,9 @@ interface BrickDao {
     @Query("SELECT * FROM brick WHERE brickId = :id ORDER BY name ASC")
     suspend fun findById(id: String): Brick
 
+    @Query("SELECT * FROM brick WHERE brickId IN (:ids)")
+    suspend fun findByIds(ids: List<String>): List<Brick>
+
     //OnConflictStrategy.REPLACE indica que si se intenta añadir un elemento con la misma clave primaria
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(brick: Brick)
@@ -52,5 +55,4 @@ interface BrickDao {
         insert(brick)
         insertBrickSetBrick(BrickSetBrickCrossRef(setId, brick.brickId))
     }
-
 }

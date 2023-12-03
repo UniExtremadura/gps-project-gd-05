@@ -23,7 +23,7 @@ data class PartExternalIds (
 
 data class Part (
 
-    @SerializedName("part_num"     ) var partNum     : String?      = null,
+    @SerializedName("part_num"     ) var partNum     : String,
     @SerializedName("name"         ) var name        : String?      = null,
     @SerializedName("part_cat_id"  ) var partCatId   : Int?         = null,
     @SerializedName("part_url"     ) var partUrl     : String?      = null,
@@ -92,10 +92,10 @@ data class Results (
 
     @SerializedName("id"          ) var id        : Int?     = null,
     @SerializedName("inv_part_id" ) var invPartId : Int?     = null,
-    @SerializedName("part"        ) var part      : Part?    = Part(),
+    @SerializedName("part"        ) var part      : Part,
     @SerializedName("color"       ) var color     : Color?   = Color(),
     @SerializedName("set_num"     ) var setNum    : String?  = null,
-    @SerializedName("quantity"    ) var quantity  : Int?     = null,
+    @SerializedName("quantity"    ) var quantity  : Int,
     @SerializedName("is_spare"    ) var isSpare   : Boolean? = null,
     @SerializedName("element_id"  ) var elementId : String?  = null,
     @SerializedName("num_sets"    ) var numSets   : Int?     = null
