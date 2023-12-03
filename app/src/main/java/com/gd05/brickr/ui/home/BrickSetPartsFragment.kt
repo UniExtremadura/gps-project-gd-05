@@ -21,6 +21,7 @@ import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.BrickSet
 import com.gd05.brickr.util.BACKGROUND
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -68,6 +69,10 @@ class BrickSetPartsFragment : Fragment() {
         _binding!!.setBricksRemoveButton.setOnClickListener {
             onRemoveClick()
         }
+        _binding!!.setBricksVerifyButton.setOnClickListener {
+            onVerifyClick()
+        }
+
         return binding.root
     }
 
@@ -116,6 +121,40 @@ class BrickSetPartsFragment : Fragment() {
                 updateLocalAmounts()
             }
         }
+    }
+
+    private fun onVerifyClick(){
+        var flag = 0
+        lifecycleScope.launch {
+            while (flag == 0) {
+                for ((brickId, quantity) in amounts) {
+                    Log.d("BrickSetPartsFragment", "brickId: $brickId, quantity: $quantity")
+                    if (db.brickDao().findById(brickId) == null) {
+                        flag = 1
+                    } else if (db.brickDao().findById(brickId).amount != amounts[brickId]) {
+                        flag = 1
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            delay(100)
+            if(flag == 1){
+                Toast.makeText(
+                    context,
+                    "No tienes todas las piezas del set",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    "Tienes todas las piezas del set",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
