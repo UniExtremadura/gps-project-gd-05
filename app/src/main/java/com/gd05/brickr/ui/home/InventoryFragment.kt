@@ -37,7 +37,7 @@ class InventoryFragment : Fragment() {
 
     private lateinit var listener: OnInventoryClickListener
     interface OnInventoryClickListener{
-        fun onBrickClick(brick: Brick)
+        fun onInventoryBrickClick(brick: Brick)
     }
 
     //TODO declaramos la variable que va a contener la base de datos
@@ -156,7 +156,7 @@ class InventoryFragment : Fragment() {
         adapter = InventoryAdapter(
             bricks = inventoryBricks,
             onClick = {
-                listener.onBrickClick(it)
+                listener.onInventoryBrickClick(it)
             },
             onLongClick = {
                 loadInventory()

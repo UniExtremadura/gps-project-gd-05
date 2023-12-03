@@ -7,6 +7,8 @@ import com.gd05.brickr.data.api.ColorsRequest
 import com.gd05.brickr.data.api.SearchRequest
 import com.gd05.brickr.data.api.ThemeByIdRequest
 import com.gd05.brickr.data.api.ThemesRequest
+import com.gd05.brickr.data.mapper.toApiBrick
+import com.gd05.brickr.data.mapper.toBrick
 import org.junit.Before
 import org.junit.Test
 
@@ -109,4 +111,41 @@ class RebrickableServiceTest {
         } else
             assert(false)
     }
+
+    @Test
+    fun test_getSetBricks() {
+        var response = service.getSetBricks("11006-1").execute()
+        if (response.isSuccessful) {
+            assert(response.body() != null)
+        } else
+            assert(false)
+    }
+
+    @Test
+    fun test_getAllSetBricks() {
+        var correct : Boolean = true
+        var next: String? = null
+        var bricks : ArrayList<String> = arrayListOf()
+        var i : Int = 1
+        var count : Int = -1
+        do {// 11006-1
+            var response = service.getSetBricks("42154-1", i, null).execute()
+            if (!response.isSuccessful) {
+                correct = false
+                break
+            } else {
+                response.body()?.let {
+                    count = it.count!!
+                    next = it.next
+                    val loadedSetBricks = it.results.map { apiBrick -> apiBrick.part!!.toApiBrick().toBrick() }
+                    for (item in loadedSetBricks) {
+                        bricks.add(item.brickId.toString())
+                    }
+                }
+            }
+            i++
+        } while (next != null)
+        assert(correct && bricks.size == count)
+    }
+
 }

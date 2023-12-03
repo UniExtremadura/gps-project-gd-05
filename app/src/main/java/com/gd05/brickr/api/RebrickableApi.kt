@@ -4,6 +4,7 @@ import com.example.example.ColorApi
 import com.example.example.ColorsResponse
 import com.gd05.brickr.data.api.ApiCategorie
 import com.gd05.brickr.data.api.ApiTheme
+import com.gd05.brickr.data.api.BrickSetBricksResponse
 import com.gd05.brickr.data.api.BricksResponse
 import com.gd05.brickr.data.api.CategoriesResponse
 import com.gd05.brickr.data.api.SearchBrickByIdResponse
@@ -121,4 +122,12 @@ interface RebrickableAPI {
         @Query("key") key: String,
         @Query("ordering") ordering: String?,
     ): Call<ApiTheme>
+
+    @GET("/api/v3/lego/sets/{setNum}/parts/")
+    fun getBrickSetBricks(
+        @Path("setNum") setNum: String,
+        @Query("key") key: String,
+        @Query("page") page: Int?,
+        @Query("page_size") pageSize: Int?,
+    ): Call<BrickSetBricksResponse>
 }

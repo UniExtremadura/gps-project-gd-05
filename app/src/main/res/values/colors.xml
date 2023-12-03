@@ -7,4 +7,6 @@
     <color name="background_gray_dark">#1A1B1C</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="delete_red">#D30F0F</color>
+    <color name="verify_green">#0C8811</color>
 </resources>
