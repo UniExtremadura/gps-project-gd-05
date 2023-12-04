@@ -92,7 +92,38 @@ class BrickSetPartsFragment : Fragment() {
     }
 
     private fun onAddClick() {
-        TODO("Crear funcionalidad del botón 'Añadir piezas' al inventario")
+        showMessage("Guardando piezas en el inventario...", requireContext())
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                val brickDao = db.brickDao()
+                val localBricksList = ArrayList<Brick>()
+
+                // Iteramos sobre la lista de piezas del set
+                for (apiBrick in bricksetBricks) {
+                    //Buscamos la pieza en nuestra base de datos
+                    val localBrick = brickDao.findById(apiBrick.brickId)
+                    //Si la pieza existe en el inventario, se suma la cantidad, si no, se inserta la nueva pieza
+                    if(localBrick == null){
+                        localBricksList.add(apiBrick)
+                    }else{
+                        // Sumamos la cantidad de piezas del set a las que ya tenemos
+                        localBrick.amount = localBrick.amount + apiBrick.amount
+                        localBricksList.add(localBrick)
+                    }
+                }
+                // Guarda las cantidades de las piezas modificadas en la BBDD
+                localBricksList.forEach { brick -> db.brickDao().insert(brick) }
+                // Se muestra un mensaje de confirmación en pantalla, pero no se realiza ninguna navegación
+                context?.let {
+                    showMessage(
+                        "¡Se han guardado correctamente todas las piezas del set!",
+                        it
+                    )
+                }
+                updateLocalAmounts()
+            }
+
+        }
     }
 
     private fun onRemoveClick() {
@@ -136,9 +167,11 @@ class BrickSetPartsFragment : Fragment() {
             while (flag == 0) {
                 for ((brickId, quantity) in amounts) {
                     Log.d("BrickSetPartsFragment", "brickId: $brickId, quantity: $quantity")
+                    // Si no existe la pieza en el inventario
                     if (db.brickDao().findById(brickId) == null) {
                         flag = 1
-                    } else if (db.brickDao().findById(brickId).amount != amounts[brickId]) {
+                        //O si no hay suficiente cantidad
+                    } else if (db.brickDao().findById(brickId).amount < amounts[brickId]!!) {
                         flag = 1
                     }
                 }
@@ -149,13 +182,13 @@ class BrickSetPartsFragment : Fragment() {
             if(flag == 1){
                 Toast.makeText(
                     context,
-                    "No tienes todas las piezas del set",
+                    "NO tienes todas las piezas del set",
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
                 Toast.makeText(
                     context,
-                    "Tienes todas las piezas del set",
+                    "¡Tienes todas las piezas del set!",
                     Toast.LENGTH_SHORT
                 ).show()
             }

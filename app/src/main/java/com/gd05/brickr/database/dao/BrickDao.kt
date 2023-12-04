@@ -35,7 +35,7 @@ interface BrickDao {
     @Query("SELECT * FROM brick WHERE brickId IN (:ids)")
     suspend fun findByIds(ids: List<String>): List<Brick>
 
-    //OnConflictStrategy.REPLACE indica que si se intenta añadir un elemento con la misma clave primaria
+    //OnConflictStrategy.REPLACE indica que si se intenta añadir un elemento con la misma clave primaria, el elemento nuevo remplazará al anterior
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(brick: Brick)
 
