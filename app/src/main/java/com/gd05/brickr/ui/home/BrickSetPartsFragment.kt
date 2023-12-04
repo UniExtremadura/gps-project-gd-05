@@ -72,6 +72,9 @@ class BrickSetPartsFragment : Fragment() {
         _binding!!.setBricksVerifyButton.setOnClickListener {
             onVerifyClick()
         }
+        _binding!!.setBricksAddButton.setOnClickListener {
+            onAddClick()
+        }
 
         return binding.root
     }
@@ -86,6 +89,10 @@ class BrickSetPartsFragment : Fragment() {
             message,
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    private fun onAddClick() {
+        TODO("Crear funcionalidad del botón 'Añadir piezas' al inventario")
     }
 
     private fun onRemoveClick() {
