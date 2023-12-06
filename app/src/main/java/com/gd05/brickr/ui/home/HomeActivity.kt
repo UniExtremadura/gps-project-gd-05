@@ -161,7 +161,7 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
 
     private fun loadThemes(){
         BACKGROUND.submit {
-            val request = ThemesRequest()
+            val request = ThemesRequest(1,1000)
             RebrickableService.getThemes(request).execute().body().let {
                 val loadedThemes = it?.results?.map { theme -> theme.toTheme() }
                 lifecycleScope.launch {

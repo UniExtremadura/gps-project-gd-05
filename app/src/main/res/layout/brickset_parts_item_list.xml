@@ -21,7 +21,6 @@
             android:backgroundTintMode="screen">
 
             <ImageView
-
                 android:id="@+id/item_img"
                 android:layout_width="70dp"
                 android:layout_height="120dp"
@@ -53,51 +52,12 @@
                 app:layout_constraintStart_toStartOf="@+id/brickset_part_title"
                 app:layout_constraintTop_toBottomOf="@+id/brickset_part_title" />
 
-            <Button
-                android:id="@+id/brickset_part_add"
-                android:layout_width="50dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginBottom="5dp"
-                android:includeFontPadding="false"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:text="+"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                app:iconGravity="textEnd"
-                app:iconPadding="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/brickset_part_remove"
-                app:layout_constraintTop_toBottomOf="@+id/brickset_part_title"
-                app:layout_constraintVertical_bias="1.0"
-                tools:text="+" />
-
-            <Button
-                android:id="@+id/brickset_part_remove"
-                android:layout_width="50dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="5dp"
-                android:backgroundTint="@color/delete_red"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:icon="@android:drawable/ic_delete"
-                app:iconGravity="textEnd"
-                app:iconPadding="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/brickset_part_title" />
 
             <TextView
                 android:id="@+id/brickset_part_amount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="176dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="9dp"
                 android:layout_marginBottom="5dp"
@@ -105,9 +65,9 @@
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/brickset_part_add"
                 app:layout_constraintStart_toEndOf="@+id/brickset_part_id"
-                app:layout_constraintTop_toBottomOf="@+id/brickset_part_title" />
+                app:layout_constraintTop_toBottomOf="@+id/brickset_part_title"
+                app:layout_constraintVertical_bias="0.576" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

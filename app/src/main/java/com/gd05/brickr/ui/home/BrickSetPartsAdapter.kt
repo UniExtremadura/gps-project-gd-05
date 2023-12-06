@@ -26,8 +26,6 @@ class BrickSetPartsAdapter(
         private val binding: BricksetPartsItemListBinding,
         private val onClick: (brick: Brick) -> Unit,
         private val onLongClick: (title: Brick) -> Unit,
-        private val onAddClick: (brick: Brick) -> Unit,
-        private val onRemoveClick: (brick: Brick) -> Unit,
         private val context: Context?,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(brick: Brick, amounts: Map<String, Int>, localAmounts: Map<String, Int>) {
@@ -53,14 +51,6 @@ class BrickSetPartsAdapter(
                     onLongClick(brick)
                     true
                 }
-
-                bricksetPartAdd.setOnClickListener {
-                    onAddClick(brick)
-                }
-
-                bricksetPartRemove.setOnClickListener {
-                    onRemoveClick(brick)
-                }
             }
         }
     }
@@ -72,8 +62,6 @@ class BrickSetPartsAdapter(
             binding,
             onClick,
             onLongClick,
-            onAddClick,
-            onRemoveClick,
             context
         )
     }

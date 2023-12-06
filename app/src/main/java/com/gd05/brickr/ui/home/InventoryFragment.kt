@@ -185,7 +185,8 @@ class InventoryFragment : Fragment() {
 
             onDestroyClick = {
                 lifecycleScope.launch {
-                   db.brickDao().delete(it)
+                    db.brickDao().delete(it)
+                    loadInventory()
                 }
             },
             context = context

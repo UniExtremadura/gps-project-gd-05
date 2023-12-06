@@ -162,39 +162,21 @@ class BrickSetPartsFragment : Fragment() {
     }
 
     private fun onVerifyClick(){
-        var flag = 0
+        showMessage("Verificando piezas...", requireContext())
         lifecycleScope.launch {
-            while (flag == 0) {
-                for ((brickId, quantity) in amounts) {
-                    Log.d("BrickSetPartsFragment", "brickId: $brickId, quantity: $quantity")
-                    // Si no existe la pieza en el inventario
-                    if (db.brickDao().findById(brickId) == null) {
-                        flag = 1
-                        //O si no hay suficiente cantidad
-                    } else if (db.brickDao().findById(brickId).amount < amounts[brickId]!!) {
-                        flag = 1
+            withContext(Dispatchers.Main) {
+                val brickDao = db.brickDao()
+                for (apiBrick in bricksetBricks) {
+                    val localBrick = brickDao.findById(apiBrick.brickId)
+                    // Si no lo tenemos en el inventario o no hay suficiente cantidad
+                    if (localBrick == null || apiBrick.amount < localBrick.amount) {
+                        context?.let { showMessage("No tienes todas las piezas", it) }
+                        return@withContext
                     }
                 }
+                context?.let{showMessage("¡Tienes todas las piezas del set!", it)}
             }
         }
-        lifecycleScope.launch {
-            delay(100)
-            if(flag == 1){
-                Toast.makeText(
-                    context,
-                    "NO tienes todas las piezas del set",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    context,
-                    "¡Tienes todas las piezas del set!",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -236,16 +218,20 @@ class BrickSetPartsFragment : Fragment() {
                 response.body()?.results?.forEach { element ->
                     run {
                         val apiBrick = element.toBrick()
-                        bricksetBricks.add(apiBrick)
-                        amounts.put(apiBrick.brickId, apiBrick.amount)
+                        val existingBrick = bricksetBricks.find { it.brickId == apiBrick.brickId }
+                        if (existingBrick != null) {
+                            // Si ya existe, sumar la cantidad
+                            existingBrick.amount += apiBrick.amount
+                            // Actualizar la cantidad en el mapa también
+                            amounts[apiBrick.brickId] = existingBrick.amount
+                        } else {
+                            // Si no existe, agregar la nueva pieza a la lista y al mapa
+                            bricksetBricks.add(apiBrick)
+                            amounts.put(apiBrick.brickId, apiBrick.amount)
+                        }
                     }
                 }
                 updateLocalAmounts()
-                /*lifecycleScope.launch {
-                    withContext(Dispatchers.Main) {
-                        adapter.updateData(bricksetBricks, amounts, localAmounts)
-                    }
-                }*/
                 page++
                 hasNext = response.body()?.next != null
 
