@@ -12,20 +12,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gd05.brickr.api.RebrickableService
-import com.gd05.brickr.data.api.BrickSetBricksResponse
-import com.gd05.brickr.data.mapper.toApiBrick
 import com.gd05.brickr.data.mapper.toBrick
 import com.gd05.brickr.database.BrickrDatabase
+import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentBricksetPartsBinding
 import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.BrickSet
 import com.gd05.brickr.util.BACKGROUND
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Response
+
 
 class BrickSetPartsFragment : Fragment() {
 
@@ -36,6 +33,7 @@ class BrickSetPartsFragment : Fragment() {
     }
 
     private lateinit var db: BrickrDatabase
+    private lateinit var repository: Repository
     private var _binding: FragmentBricksetPartsBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: BrickSetPartsAdapter
@@ -53,6 +51,7 @@ class BrickSetPartsFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
         if (context is BrickSetPartsFragment.OnBrickSetPartsClickListener) {
             listener = context
         } else {
@@ -66,6 +65,13 @@ class BrickSetPartsFragment : Fragment() {
     ): View {
         _binding = FragmentBricksetPartsBinding.inflate(inflater, container, false)
         db = context?.let { BrickrDatabase.getInstance(it) }!!
+        repository = Repository.getInstance(
+            db.brickDao(),
+            db.brickSetDao(),
+            db.categoryDao(),
+            db.themeDao(),
+            RebrickableService
+        )
         _binding!!.setBricksRemoveButton.setOnClickListener {
             onRemoveClick()
         }
@@ -95,13 +101,12 @@ class BrickSetPartsFragment : Fragment() {
         showMessage("Guardando piezas en el inventario...", requireContext())
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
-                val brickDao = db.brickDao()
                 val localBricksList = ArrayList<Brick>()
 
                 // Iteramos sobre la lista de piezas del set
                 for (apiBrick in bricksetBricks) {
                     //Buscamos la pieza en nuestra base de datos
-                    val localBrick = brickDao.findById(apiBrick.brickId)
+                    val localBrick = repository.publicGetBrick(apiBrick.brickId)
                     //Si la pieza existe en el inventario, se suma la cantidad, si no, se inserta la nueva pieza
                     if(localBrick == null){
                         localBricksList.add(apiBrick)
@@ -112,7 +117,7 @@ class BrickSetPartsFragment : Fragment() {
                     }
                 }
                 // Guarda las cantidades de las piezas modificadas en la BBDD
-                localBricksList.forEach { brick -> db.brickDao().insert(brick) }
+                localBricksList.forEach { brick -> repository.publicInsertBrick(brick) }
                 // Se muestra un mensaje de confirmación en pantalla, pero no se realiza ninguna navegación
                 context?.let {
                     showMessage(
@@ -131,11 +136,11 @@ class BrickSetPartsFragment : Fragment() {
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
 
-                val brickDao = db.brickDao()
+
                 val localBricks = ArrayList<Brick>()
 
                 for (apiBrick in bricksetBricks) {
-                    val localBrick = brickDao.findById(apiBrick.brickId)
+                    val localBrick = repository.publicGetBrick(apiBrick.brickId)
 
                     // Si no lo tenemos en el inventario o no hay suficiente cantidad
                     if (localBrick == null || apiBrick.amount > localBrick.amount) {
@@ -149,7 +154,7 @@ class BrickSetPartsFragment : Fragment() {
                     localBricks.add(localBrick)
                 }
                 // Eliminar las piezas de la BBDD
-                localBricks.forEach { brick -> db.brickDao().insert(brick) }
+                localBricks.forEach { brick -> repository.publicInsertBrick(brick) }
                 context?.let {
                     showMessage(
                         "Se han eliminado correctamente todas las piezas del set",
@@ -165,16 +170,15 @@ class BrickSetPartsFragment : Fragment() {
         showMessage("Verificando piezas...", requireContext())
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
-                val brickDao = db.brickDao()
                 for (apiBrick in bricksetBricks) {
-                    val localBrick = brickDao.findById(apiBrick.brickId)
+                    val localBrick = repository.publicGetBrick(apiBrick.brickId)
                     // Si no lo tenemos en el inventario o no hay suficiente cantidad
-                    if (localBrick == null || apiBrick.amount < localBrick.amount) {
+                    if (localBrick == null || apiBrick.amount > localBrick.amount) {
                         context?.let { showMessage("No tienes todas las piezas", it) }
                         return@withContext
                     }
                 }
-                context?.let{showMessage("¡Tienes todas las piezas del set!", it)}
+                context?.let{showMessage("Tienes todas las piezas del set", it)}
             }
         }
     }
@@ -190,7 +194,7 @@ class BrickSetPartsFragment : Fragment() {
         bricksetBricks.forEach { apiBrick ->
             run {
                 lifecycleScope.launch {
-                    val localBrick = db.brickDao().findById(apiBrick.brickId)
+                    val localBrick = repository.publicGetBrick(apiBrick.brickId)
                     if (localBrick != null)
                         localAmounts.put(apiBrick.brickId, localBrick.amount)
                     else
@@ -219,6 +223,7 @@ class BrickSetPartsFragment : Fragment() {
                     run {
                         val apiBrick = element.toBrick()
                         val existingBrick = bricksetBricks.find { it.brickId == apiBrick.brickId }
+
                         if (existingBrick != null) {
                             // Si ya existe, sumar la cantidad
                             existingBrick.amount += apiBrick.amount
@@ -229,6 +234,7 @@ class BrickSetPartsFragment : Fragment() {
                             bricksetBricks.add(apiBrick)
                             amounts.put(apiBrick.brickId, apiBrick.amount)
                         }
+
                     }
                 }
                 updateLocalAmounts()
@@ -238,6 +244,12 @@ class BrickSetPartsFragment : Fragment() {
                 Thread.sleep(1000)
             } while (hasNext)
         }
+    }
+
+    private fun loadBrickSetParts2(){
+        lifecycleScope.launch {repository.publicGetBricksOfBrickSet(set.brickSetId)}
+
+        updateLocalAmounts()
     }
 
     private fun setUpRecyclerView() {
@@ -252,20 +264,6 @@ class BrickSetPartsFragment : Fragment() {
                 Toast.makeText(
                     context,
                     "Long click on: " + it.name,
-                    Toast.LENGTH_SHORT
-                ).show()
-            },
-            onAddClick = {
-                Toast.makeText(
-                    context,
-                    "Add: " + it.name,
-                    Toast.LENGTH_SHORT
-                ).show()
-            },
-            onRemoveClick = {
-                Toast.makeText(
-                    context,
-                    "Remove: " + it.name,
                     Toast.LENGTH_SHORT
                 ).show()
             },

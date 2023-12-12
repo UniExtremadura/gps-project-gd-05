@@ -13,7 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.gd05.brickr.R
+import com.gd05.brickr.api.RebrickableService
 import com.gd05.brickr.database.BrickrDatabase
+import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentBrickDetailBinding
 import kotlinx.coroutines.launch
 
@@ -29,6 +31,7 @@ class BrickDetailFragment : Fragment() {
     private var _binding: FragmentBrickDetailBinding? = null
     private val binding get() = _binding!!
     private  lateinit var db: BrickrDatabase
+    private lateinit var  repository: Repository
 
     private val args: BrickDetailFragmentArgs by navArgs()
 
@@ -36,6 +39,14 @@ class BrickDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        db = BrickrDatabase.getInstance(requireContext())!!
+        repository = Repository.getInstance(
+            db.brickDao(),
+            db.brickSetDao(),
+            db.categoryDao(),
+            db.themeDao(),
+            RebrickableService
+        )
         _binding = FragmentBrickDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -44,8 +55,7 @@ class BrickDetailFragment : Fragment() {
         var categoryName: String = ""
 
         lifecycleScope.launch {
-            db = BrickrDatabase.getInstance(requireContext())!!
-            val category = db.categoryDao().getCategoryById(categoryId)
+            val category = repository.publicGetCategoryName(categoryId)
             categoryName = category?.categoryName ?: "Unknown"
             binding.brickDetailsCategory.text = categoryName
         }
@@ -57,8 +67,7 @@ class BrickDetailFragment : Fragment() {
         var brickAmount: Int = 0
 
         lifecycleScope.launch {
-            db = BrickrDatabase.getInstance(requireContext())!!
-            val brick = db.brickDao().findById(brickId)
+            val brick = repository.publicGetBrick(brickId)
             brickAmount = brick?.amount ?: 0
             binding.brickDetailsAmount.text = brickAmount.toString()
         }
@@ -94,7 +103,7 @@ class BrickDetailFragment : Fragment() {
         binding.brickDetailsAdd.setOnClickListener {
             lifecycleScope.launch {
                 brick.amount++
-                db.brickDao().insert(brick)
+                repository.publicInsertBrick(brick)
                 binding.brickDetailsAmount.text = brick.amount.toString()
 
             }
@@ -104,7 +113,7 @@ class BrickDetailFragment : Fragment() {
             lifecycleScope.launch {
                 if (brick.amount > 1) {
                     brick.amount--
-                    db.brickDao().insert(brick)
+                    repository.publicInsertBrick(brick)
                     binding.brickDetailsAmount.text = brick.amount.toString()
                 }
             }
@@ -112,8 +121,8 @@ class BrickDetailFragment : Fragment() {
 
         binding.brickDetailsDestroy.setOnClickListener {
             lifecycleScope.launch {
-                db.brickDao().delete(brick)
                 brick.amount = 0
+                repository.publicInsertBrick(brick)
                 binding.brickDetailsAmount.text = brick.amount.toString()
             }
         }

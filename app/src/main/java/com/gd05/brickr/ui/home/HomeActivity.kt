@@ -22,6 +22,7 @@ import com.gd05.brickr.data.mapper.toBrick
 import com.gd05.brickr.data.mapper.toCategory
 import com.gd05.brickr.data.mapper.toTheme
 import com.gd05.brickr.database.BrickrDatabase
+import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.ActivityHomeBinding
 import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.BrickSet
@@ -38,6 +39,7 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     private lateinit var binding: ActivityHomeBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var db: BrickrDatabase
+    private lateinit var repository: Repository
 
     /** We define the navController val in charge of handle everything related to navigation
      * we assign the nav_host_fragment we define in activity_home and returns as NavHostFragment*/
@@ -49,6 +51,13 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         db = BrickrDatabase.getInstance(applicationContext)!!
+        repository = Repository.getInstance(
+            db.brickDao(),
+            db.brickSetDao(),
+            db.categoryDao(),
+            db.themeDao(),
+            RebrickableService
+        )
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -146,20 +155,12 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     }
 
     private fun loadCategories(){
-        BACKGROUND.submit {
-            val request = CategoriesRequest()
-            RebrickableService.getCategories(request).execute().body().let {
-                val loadedCategories = it?.results?.map { category -> category.toCategory() }
-                lifecycleScope.launch {
-                    loadedCategories?.forEach { category ->
-                        db.categoryDao().insertCategory(category)
-                    }
-                }
-            }
-        }
+        lifecycleScope.launch { repository.publicGetCategories() }
     }
 
     private fun loadThemes(){
+        lifecycleScope.launch { repository.publicGetThemes() }
+
         BACKGROUND.submit {
             val request = ThemesRequest(1,1000)
             RebrickableService.getThemes(request).execute().body().let {
@@ -175,10 +176,8 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
 
 
     private fun loadDatabase(){
-        lifecycleScope.launch {
-            loadCategories()
-            loadThemes()
-        }
+        loadCategories()
+        loadThemes()
     }
 
 

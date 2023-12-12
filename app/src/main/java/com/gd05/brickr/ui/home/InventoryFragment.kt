@@ -15,11 +15,14 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gd05.brickr.R
+import com.gd05.brickr.api.RebrickableService
 import com.gd05.brickr.database.BrickrDatabase
+import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentInventoryBinding
 import com.gd05.brickr.dummy.dummyBricks
 import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.Category
+import com.gd05.brickr.ui.search.SearchBricksAdapter
 import com.google.android.material.chip.Chip
 import kotlinx.coroutines.launch
 
@@ -42,6 +45,7 @@ class InventoryFragment : Fragment() {
 
     //TODO declaramos la variable que va a contener la base de datos
     private lateinit var db: BrickrDatabase
+    private lateinit var repository: Repository
     private lateinit var searchView: SearchView
     private var category: Int? = null
 
@@ -101,6 +105,13 @@ class InventoryFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         db = BrickrDatabase.getInstance(context)!!
+        repository = Repository.getInstance(
+            db.brickDao(),
+            db.brickSetDao(),
+            db.categoryDao(),
+            db.themeDao(),
+            RebrickableService
+        )
         if (context is OnInventoryClickListener) {
             listener = context
         } else {
@@ -134,7 +145,7 @@ class InventoryFragment : Fragment() {
     }
 
     private fun handleChipSelection(chip: Chip) {
-          category  = when (chip.id) {
+        category  = when (chip.id) {
             R.id.chip1 -> 1
             R.id.chip2 -> 11
             R.id.chip3 -> 9
@@ -159,7 +170,7 @@ class InventoryFragment : Fragment() {
                 listener.onInventoryBrickClick(it)
             },
             onLongClick = {
-                loadInventory()
+                //loadInventory()
                 Toast.makeText(
                     context,
                     "Long click on: " + it.name,
@@ -169,7 +180,7 @@ class InventoryFragment : Fragment() {
             onAddClick = {
                 lifecycleScope.launch {
                     it.amount++
-                    db.brickDao().insert(it)
+                    repository.publicInsertBrick(it)
                     loadInventory()
                 }
             },
@@ -177,7 +188,7 @@ class InventoryFragment : Fragment() {
                 lifecycleScope.launch {
                     if(it.amount > 1){
                         it.amount--
-                        db.brickDao().insert(it)
+                        repository.publicInsertBrick(it)
                         loadInventory()
                     }
                 }
@@ -185,47 +196,50 @@ class InventoryFragment : Fragment() {
 
             onDestroyClick = {
                 lifecycleScope.launch {
-                    db.brickDao().delete(it)
+                    it.amount = 0
+                    repository.publicInsertBrick(it)
                     loadInventory()
                 }
             },
             context = context
         )
         with(binding) {
-                rvInventoryList.layoutManager = LinearLayoutManager(context)
-                rvInventoryList.adapter = adapter
-            }
+            rvInventoryList.layoutManager = LinearLayoutManager(context)
+            rvInventoryList.adapter = adapter
+        }
         android.util.Log.d("InventoryFragment", "setUpRecyclerView")
+        subscribeInventoryBricksUi(adapter)
+    }
+
+    private fun subscribeInventoryBricksUi(adapter: InventoryAdapter) {
+        repository.inventoryBricks.observe(viewLifecycleOwner) { bricks ->
+            adapter.updateData(bricks)
+        }
     }
 
     private fun loadInventory() {
-        lifecycleScope.launch {
-            inventoryBricks = db.brickDao().getInventoryBricks()
-            adapter.updateData(inventoryBricks)
-        }
+        lifecycleScope.launch { repository.publicGetInventoryBricks() }
     }
 
     //TODO metodo que llama a la bd para filtrar los bricks por categoria
     private fun loadFilterInventory(category: Int?) {
         lifecycleScope.launch {
-            inventoryBricks = if (category != null) {
-                db.brickDao().getFilteredInventoryBricks(category)
+            if (category != null) {
+                repository.publicGetFilteredInventoryBricks(category)
             } else {
-                db.brickDao().getInventoryBricks()
+                repository.publicGetInventoryBricks()
             }
-            adapter.updateData(inventoryBricks)
         }
     }
 
     private fun loadSearchInventory(query: String?, category: Int?) {
         if (query != null) {
             lifecycleScope.launch {
-                inventoryBricks = if (category != null) {
-                    db.brickDao().getSearchedFilteredInventoryBricks(query, category)
+                if (category != null) {
+                    repository.publicGetSearchedFilteredInventoryBricks(query, category)
                 } else {
-                    db.brickDao().getSearchedInventoryBricks(query)
+                    repository.publicGetSearchedInventoryBricks(query)
                 }
-                adapter.updateData(inventoryBricks)
             }
         }
     }

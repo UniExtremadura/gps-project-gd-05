@@ -13,17 +13,22 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gd05.brickr.R
+import com.gd05.brickr.api.RebrickableAPI
 import com.gd05.brickr.api.RebrickableService
+import com.gd05.brickr.api.getRebrickableApi
 import com.gd05.brickr.data.api.BricksRequest
 import com.gd05.brickr.data.api.SearchRequest
 import com.gd05.brickr.data.mapper.toBrick
 import com.gd05.brickr.data.mapper.toSet
+import com.gd05.brickr.database.BrickrDatabase
+import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentSearchBinding
 import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.BrickSet
 import com.gd05.brickr.util.BACKGROUND
 import com.gd05.brickr.util.hideKeyboardFrom
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -40,6 +45,10 @@ class SearchFragment : Fragment() {
     private lateinit var listener: OnSearchClickListener
     private lateinit var searchView: SearchView
 
+    //Declaracion de la variable repository y base de datos para almacenar cache
+    private lateinit var repository: Repository
+    private lateinit var db: BrickrDatabase
+
     interface OnSearchClickListener {
         fun onSearchBrickClick(brick: Brick)
         fun onSearchSetClick(set: BrickSet)
@@ -52,6 +61,15 @@ class SearchFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        //Inicializacion de la base de datos y el repositorio
+        db = BrickrDatabase.getInstance(context)!!
+        repository = Repository.getInstance(
+            db.brickDao(),
+            db.brickSetDao(),
+            db.categoryDao(),
+            db.themeDao(),
+            RebrickableService
+        )
         if (context is OnSearchClickListener) {
             listener = context
         } else {
@@ -62,6 +80,7 @@ class SearchFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
+
     ): View {
         binding = FragmentSearchBinding.inflate(inflater, container, false)
 
@@ -87,6 +106,8 @@ class SearchFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        subscribeBricksUi(bricksAdapter)
+        subscribeSetsUi(setsAdapter)
         loadElementsOnList()
     }
 
@@ -183,32 +204,27 @@ class SearchFragment : Fragment() {
     }
 
     private fun searchSets(query: String) {
-        BACKGROUND.submit {
-            val request = SearchRequest(search = query)
-            RebrickableService.searchSet(request).execute().body()?.let {
-                loadedSets = it.results.map { apiSet -> apiSet.toSet() }
-                lifecycleScope.launch {
-                    withContext(Dispatchers.Main) {
-                        repaintSetsToShow()
-                    }
-                }
-            }
-        }
+        lifecycleScope.launch {repository.publicSearchBrickSets(query)  }
     }
 
     private fun searchBricks(query: String) {
-        BACKGROUND.submit {
-            val request = BricksRequest(search = query)
-            RebrickableService.searchBricks(request).execute().body()?.let {
-                loadedBricks = it.results.map { apiBrick -> apiBrick.toBrick() }
-                lifecycleScope.launch {
-                    withContext(Dispatchers.Main) {
-                        repaintBricksToShow()
-                    }
-                }
-            }
+        //Llamada a la funcion del repositorio para buscar piezas primero en la BD sino recurre a la API
+        lifecycleScope.launch {repository.publicSearchBricks(query)  }
+    }
+
+    //Funcion para suscribirse a los cambios en la lista de piezas, cuando se produzca un cambio se actualiza el adapter
+    private fun subscribeBricksUi(adapter: SearchBricksAdapter) {
+        repository.searchedBricks.observe(viewLifecycleOwner) { bricks ->
+            adapter.updateData(bricks)
         }
     }
+
+    private fun subscribeSetsUi(adapter: SearchSetsAdapter) {
+        repository.searchedSets.observe(viewLifecycleOwner) { sets ->
+            adapter.updateData(sets)
+        }
+    }
+
 
     companion object {
         @JvmStatic

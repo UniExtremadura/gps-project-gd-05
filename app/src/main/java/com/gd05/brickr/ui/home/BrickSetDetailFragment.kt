@@ -14,7 +14,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.gd05.brickr.R
+import com.gd05.brickr.api.RebrickableService
 import com.gd05.brickr.database.BrickrDatabase
+import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentBricksetDetailBinding
 import kotlinx.coroutines.launch
 
@@ -27,7 +29,8 @@ class BrickSetDetailFragment : Fragment() {
 
     private var _binding: FragmentBricksetDetailBinding? = null
     private val binding get() = _binding!!
-    private  lateinit var db: BrickrDatabase
+    private lateinit var db: BrickrDatabase
+    private lateinit var repository: Repository
 
     private val args: BrickSetDetailFragmentArgs by navArgs()
 
@@ -36,21 +39,28 @@ class BrickSetDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        db = BrickrDatabase.getInstance(requireContext())!!
+        repository = Repository.getInstance(
+            db.brickDao(),
+            db.brickSetDao(),
+            db.categoryDao(),
+            db.themeDao(),
+            RebrickableService
+        )
         _binding = FragmentBricksetDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     private fun getTheme(themeId: Int): String {
-        var categoryName: String = ""
+        var themeName: String = ""
 
         lifecycleScope.launch {
-            db = BrickrDatabase.getInstance(requireContext())!!
-            val theme = db.themeDao().getThemeById(themeId)
-            var tName = theme?.themeName ?: "Unknown"
-            binding.brickSetDetailsTheme.text = tName
+            val theme = repository.publicGetThemeName(themeId)
+            themeName = theme?.themeName ?: "Unknown"
+            binding.brickSetDetailsTheme.text = themeName
         }
 
-        return categoryName
+        return themeName
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -97,8 +107,10 @@ class BrickSetDetailFragment : Fragment() {
                 // Do something when the item is marked as favorite
                 lifecycleScope.launch {
                     brickSet.isFavorite = true
-                    if(db.themeDao().getThemeById(brickSet.themeId!!) != null){
-                        db.brickSetDao().insert(brickSet)
+
+                    if(repository.publicGetThemeName(brickSet.themeId!!)  != null){
+                        repository.publicInsertBrickSet(brickSet)
+
                         Toast.makeText(requireContext(), "Marcado como favorito", Toast.LENGTH_SHORT).show()
                     }
                     else{
@@ -110,8 +122,9 @@ class BrickSetDetailFragment : Fragment() {
                 // Do something when the item is unmarked as favorite
                 lifecycleScope.launch {
                     brickSet.isFavorite = false
-                    if(db.themeDao().getThemeById(brickSet.themeId!!) != null){
-                        db.brickSetDao().delete(brickSet)
+                    if(repository.publicGetThemeName(brickSet.themeId!!) != null){
+                        brickSet.isFavorite = false
+                        repository.publicInsertBrickSet(brickSet)
                         Toast.makeText(requireContext(), "Desmarcado de favorito", Toast.LENGTH_SHORT).show()
                     }
                     else{

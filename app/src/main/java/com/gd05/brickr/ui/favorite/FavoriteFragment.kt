@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gd05.brickr.R
+import com.gd05.brickr.api.RebrickableService
 import com.gd05.brickr.database.BrickrDatabase
+import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentFavoriteBinding
 import com.gd05.brickr.model.BrickSet
 import com.gd05.brickr.ui.search.FavoriteAdapter
@@ -20,7 +22,8 @@ class FavoriteFragment : Fragment() {
     private var loadedSets: List<BrickSet> = emptyList()
     private lateinit var setsAdapter: FavoriteAdapter
     private lateinit var binding: FragmentFavoriteBinding
-    private lateinit var database: BrickrDatabase
+    private lateinit var db: BrickrDatabase
+    private lateinit var repository: Repository
     private lateinit var listener: OnFavoriteClickListener
 
     override fun onAttach(context: Context) {
@@ -30,18 +33,25 @@ class FavoriteFragment : Fragment() {
         } else {
             throw RuntimeException("$context must implement OnSearchClickListener")
         }
-        database = BrickrDatabase.getInstance(context)!!
+        db = BrickrDatabase.getInstance(context)!!
+        repository = Repository.getInstance(
+            db.brickDao(),
+            db.brickSetDao(),
+            db.categoryDao(),
+            db.themeDao(),
+            RebrickableService
+        )
     }
 
     override fun onStart() {
         super.onStart()
+        subscribeSetsUi(setsAdapter)
         lifecycleScope.launch {
-            loadedSets = database.brickSetDao().findFavorites()
-            setsAdapter.updateData(loadedSets)
+            repository.publicFavoriteBrickSet()
         }
-        if(!loadedSets.isEmpty())
-            setsAdapter.updateData(loadedSets)
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,6 +79,12 @@ class FavoriteFragment : Fragment() {
         )
 
         binding.setsList.adapter = setsAdapter
+    }
+
+    private fun subscribeSetsUi(setsAdapter: FavoriteAdapter) {
+        repository.favoriteSets.observe(viewLifecycleOwner) { sets ->
+            setsAdapter.updateData(sets)
+        }
     }
 
     companion object {

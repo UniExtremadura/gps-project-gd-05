@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.gd05.brickr.R
-import com.gd05.brickr.database.dao.BrickSetDao
 import com.gd05.brickr.databinding.BricksetPartsItemListBinding
 import com.gd05.brickr.model.Brick
 
@@ -16,8 +15,6 @@ class BrickSetPartsAdapter(
     private var amounts: Map<String, Int>,
     private val onClick: (brick: Brick) -> Unit,
     private val onLongClick: (title: Brick) -> Unit,
-    private val onRemoveClick: (brick: Brick) -> Unit,
-    private val onAddClick: (brick: Brick) -> Unit,
     private val context: Context?,
     private var localAmount: Map<String, Int>
 ) : RecyclerView.Adapter<BrickSetPartsAdapter.BrickSetPartViewHolder>() {

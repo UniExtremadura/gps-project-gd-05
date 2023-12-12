@@ -12,6 +12,9 @@ interface ThemeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTheme(theme: Theme)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(themes: List<Theme>)
+
     @Query("SELECT * FROM Theme WHERE themeId = :themeId")
     suspend fun getThemeById(themeId: Int): Theme?
 
