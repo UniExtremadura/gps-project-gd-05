@@ -1,9 +1,11 @@
 package com.gd05.brickr.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.Category
 
 @Dao
@@ -20,6 +22,9 @@ interface CategoryDao {
 
     @Query("SELECT * FROM Category")
     suspend fun getAllCategories(): List<Category>
+
+    @Query("SELECT * FROM Category")
+    fun getLiveDataCategories(): LiveData<List<Category>>
 
     @Query("DELETE FROM Category")
     suspend fun deleteAllCategories()

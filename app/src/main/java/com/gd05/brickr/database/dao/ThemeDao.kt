@@ -1,9 +1,11 @@
 package com.gd05.brickr.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.gd05.brickr.model.Category
 import com.gd05.brickr.model.Theme
 
 @Dao
@@ -20,6 +22,9 @@ interface ThemeDao {
 
     @Query("SELECT * FROM Theme")
     suspend fun getAllThemes(): List<Theme>
+
+    @Query("SELECT * FROM Theme")
+    fun getLiveDataThemes(): LiveData<List<Theme>>
 
 
     @Query("DELETE FROM Theme")

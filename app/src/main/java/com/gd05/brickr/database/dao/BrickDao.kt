@@ -39,12 +39,19 @@ interface BrickDao {
     @Query("SELECT * FROM brick WHERE name LIKE '%' || :name || '%' ORDER BY name ASC")
     suspend fun getBricksByName(name: String): List<Brick>
 
+    @Query("SELECT * FROM brick WHERE name LIKE '%' || :name || '%' ORDER BY name ASC")
+    fun getLiveDataBricksByName(name: String): LiveData<List<Brick>>
 
+    @Query("SELECT * FROM brick WHERE brickId = :id ORDER BY name ASC")
+    fun getLiveDataBrickById(id: String): LiveData<Brick>
 
     //Funciones para inventario
 
     @Query("SELECT * FROM brick WHERE amount > 0 ORDER BY name ASC")
     suspend fun getInventoryBricks(): List<Brick>
+
+    @Query("SELECT * FROM brick WHERE amount > 0 ORDER BY name ASC")
+    fun getLiveDataInventoryBricks(): LiveData<List<Brick>>
 
     @Query("SELECT * FROM brick WHERE amount > 0 AND categoryId = :category ORDER BY name ASC")
     suspend fun getFilteredInventoryBricks(category: Int): List<Brick>
@@ -54,6 +61,16 @@ interface BrickDao {
 
     @Query("SELECT * FROM brick WHERE amount > 0 AND name LIKE :query || '%' AND (:category IS NULL OR categoryId = :category) ORDER BY name ASC")
     suspend fun getSearchedFilteredInventoryBricks(query: String, category: Int?): List<Brick>
+
+    @Query("SELECT * FROM brick WHERE amount > 0 AND categoryId = :category ORDER BY name ASC")
+    fun getLiveDataFilteredInventoryBricks(category: Int): LiveData<List<Brick>>
+
+    @Query("SELECT * FROM brick WHERE amount > 0 AND name LIKE :name || '%' ORDER BY name ASC")
+    fun getLiveDataSearchedInventoryBricks(name: String): LiveData<List<Brick>>
+
+    @Query("SELECT * FROM brick WHERE amount > 0 AND name LIKE :query || '%' AND (:category IS NULL OR categoryId = :category) ORDER BY name ASC")
+    fun getLiveDataSearchedFilteredInventoryBricks(query: String, category: Int?): LiveData<List<Brick>>
+
 
 
     @Transaction

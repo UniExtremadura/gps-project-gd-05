@@ -25,61 +25,52 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
-class Repository private constructor(
+class Repository(
     private val brickDao: BrickDao,
     private val setDao: BrickSetDao,
     private val categoryDao: CategoryDao,
     private val themeDao: ThemeDao,
     private val networkService: RebrickableService
 ) {
-    var searchedBricks:     MutableLiveData<List<Brick>> = MutableLiveData()
-    var searchedSets:       MutableLiveData<List<BrickSet>> = MutableLiveData()
+
     var BricksOfBrickSet:   MutableLiveData<List<Brick>> = MutableLiveData()
-    var favoriteSets:       MutableLiveData<List<BrickSet>> = MutableLiveData()
-    var inventoryBricks:    MutableLiveData<List<Brick>> = MutableLiveData()
-    var categories:         MutableLiveData<List<Category>> = MutableLiveData()
-    var themes:             MutableLiveData<List<Theme>> = MutableLiveData()
+    var categories:         LiveData<List<Category>> = categoryDao.getLiveDataCategories()
+    var themes:             LiveData<List<Theme>> = themeDao.getLiveDataThemes()
+
+    private var queryBrick: MutableLiveData<String> = MutableLiveData()
+
+    var searchedBricks: LiveData<List<Brick>> = queryBrick.switchMap { query ->
+        brickDao.getLiveDataBricksByName(query)
+    }
+
+    var searchedSets: LiveData<List<BrickSet>> = queryBrick.switchMap { query ->
+        setDao.getLiveDataSetsByName(query)
+    }
+
+    var favoriteSets: LiveData<List<BrickSet>> = setDao.getLiveDataFavoriteSets()
+
+    var inventoryBricks: LiveData<List<Brick>> = brickDao.getLiveDataInventoryBricks()
 
 
     //Métodos del fragmento de búsqueda
     suspend fun publicSearchBricks(query: String){
-        searchBricks(query)
-    }
-    private suspend fun searchBricks(query: String) {
+        queryBrick.value = query
         withContext(Dispatchers.IO) {
-            var loadedBricks: List<Brick> = brickDao.getBricksByName(query)
-            if(loadedBricks.isEmpty()){
-                val request = BricksRequest(search = query)
+            val request = BricksRequest(search = query)
 
-                networkService.searchBricks(request).execute().body()?.let {
-                    loadedBricks = it.results.map { apiBrick -> apiBrick.toBrick() }
-                }
-                brickDao.insertAll(loadedBricks)
-                searchedBricks.postValue(loadedBricks)
-            }
-            else{
-                searchedBricks.postValue(loadedBricks)
+            networkService.searchBricks(request).execute().body()?.let {
+                 brickDao.insertAll(it.results.map { apiBrick -> apiBrick.toBrick() })
             }
         }
     }
 
     suspend fun publicSearchBrickSets(query: String){
-        searchBrickSets(query)
-    }
-    private suspend fun searchBrickSets(query: String) {
+        queryBrick.value = query
         withContext(Dispatchers.IO) {
-            var loadedSets: List<BrickSet> = setDao.getSetsByName(query)
-            if(loadedSets.isEmpty()){
-                val request = SearchRequest(search = query)
+            val request = SearchRequest(search = query)
 
-                networkService.searchSet(request).execute().body()?.let {
-                    loadedSets = it.results.map { apiSet -> apiSet.toSet() }
-                }
-                setDao.insertAll(loadedSets)
-                searchedSets.postValue(loadedSets)
-            }
-            else{
-                searchedSets.postValue(loadedSets)
+            networkService.searchSet(request).execute().body()?.let {
+                setDao.insertAll(it.results.map { apiSet -> apiSet.toSet() })
             }
         }
     }
@@ -93,33 +84,15 @@ class Repository private constructor(
     }
 
 
-    //Métodos del fragmento de favoritos
-    suspend fun publicFavoriteBrickSet() {
-        getFavoriteBrickSet()
-    }
-    private suspend fun getFavoriteBrickSet() {
-        var loadedSets: List<BrickSet> = setDao.findFavorites()
-        favoriteSets.postValue(loadedSets)
-    }
-
     //Métodos del theme y category
     suspend fun publicGetCategories() {
         getCategories()
     }
     private suspend fun getCategories() {
         withContext(Dispatchers.IO) {
-            var loadedCategories: List<Category> = categoryDao.getAllCategories()
-            if(loadedCategories.isEmpty()){
-                val request = CategoriesRequest()
-
-                networkService.getCategories(request).execute().body()?.let {
-                    loadedCategories = it.results.map { cat -> cat.toCategory() }
-                }
-                categoryDao.insertAll(loadedCategories)
-                categories.postValue(loadedCategories)
-            }
-            else{
-                categories.postValue(loadedCategories)
+            val request = CategoriesRequest()
+            networkService.getCategories(request).execute().body()?.let {
+                categoryDao.insertAll(it.results.map { cat -> cat.toCategory() })
             }
         }
     }
@@ -136,18 +109,9 @@ class Repository private constructor(
     }
     private suspend fun getThemes() {
         withContext(Dispatchers.IO) {
-            var loadedThemes: List<Theme> = themeDao.getAllThemes()
-            if(loadedThemes.isEmpty()){
-                val request = ThemesRequest(1, 1000)
-
-                networkService.getThemes(request).execute().body()?.let {
-                    loadedThemes = it.results.map { theme -> theme.toTheme() }
-                }
-                themeDao.insertAll(loadedThemes)
-                themes.postValue(loadedThemes)
-            }
-            else{
-                themes.postValue(loadedThemes)
+            val request = ThemesRequest(1, 1000)
+            networkService.getThemes(request).execute().body()?.let {
+                themeDao.insertAll(it.results.map { theme -> theme.toTheme() })
             }
         }
     }
@@ -161,36 +125,20 @@ class Repository private constructor(
 
     //Métodos del fragmento inventario
 
-    suspend fun publicGetInventoryBricks() {
-        getInventoryBricks()
-    }
-    private suspend fun getInventoryBricks() {
-        var loadedInventory: List<Brick> = brickDao.getInventoryBricks()
-        inventoryBricks.postValue(loadedInventory)
+    fun publicGetInventoryBricks() {
+        inventoryBricks = brickDao.getLiveDataInventoryBricks()
     }
 
-    suspend fun publicGetFilteredInventoryBricks(selectedCategory: Int) {
-        getFilteredBricks(selectedCategory)
-    }
-    private suspend fun getFilteredBricks(selectedCategory: Int) {
-        var loadedInventory: List<Brick> = brickDao.getFilteredInventoryBricks(selectedCategory)
-        inventoryBricks.postValue(loadedInventory)
+    fun publicGetFilteredInventoryBricks(selectedCategory: Int) {
+        inventoryBricks = brickDao.getLiveDataFilteredInventoryBricks(selectedCategory)
     }
 
-    suspend fun publicGetSearchedInventoryBricks(query: String) {
-        getSearchedInventoryBricks(query)
-    }
-    private suspend fun getSearchedInventoryBricks(query: String) {
-        var loadedInventory: List<Brick> = brickDao.getSearchedInventoryBricks(query)
-        inventoryBricks.postValue(loadedInventory)
+    fun publicGetSearchedInventoryBricks(query: String) {
+        inventoryBricks = brickDao.getLiveDataSearchedInventoryBricks(query)
     }
 
-    suspend fun publicGetSearchedFilteredInventoryBricks(query: String, selectedCategory: Int) {
-        getSearchedFilteredInventoryBricks(query, selectedCategory)
-    }
-    private suspend fun getSearchedFilteredInventoryBricks(query: String, selectedCategory: Int) {
-        var loadedInventory: List<Brick> = brickDao.getSearchedFilteredInventoryBricks(query, selectedCategory)
-        inventoryBricks.postValue(loadedInventory)
+    fun publicGetSearchedFilteredInventoryBricks(query: String, selectedCategory: Int) {
+        inventoryBricks = brickDao.getLiveDataSearchedFilteredInventoryBricks(query, selectedCategory)
     }
 
     suspend fun publicInsertBrick(brick: Brick) {
@@ -201,11 +149,19 @@ class Repository private constructor(
         brickDao.insert(brick)
     }
 
-    suspend fun publicGetBrick(brickId: String): Brick {
-        return getBrick(brickId)
+    suspend fun publicGetBrickById(brickId: String): Brick {
+        return getBrickById(brickId)
     }
-    private suspend fun getBrick(brickId: String): Brick {
+    private suspend fun getBrickById(brickId: String): Brick {
         return brickDao.findById(brickId)
+    }
+
+    suspend fun publicGetBrickSetById(brickSetId: String): BrickSet {
+        return getBrickSetById(brickSetId)
+    }
+
+    private suspend fun getBrickSetById(brickSetId: String): BrickSet{
+        return setDao.findById(brickSetId)
     }
 
     suspend fun publicInsertBrickSet(brickSet: BrickSet) {
@@ -216,20 +172,5 @@ class Repository private constructor(
     }
 
     companion object {
-        private const val MIN_TIME_FROM_LAST_FETCH_MILLIS: Long = 30000
-        @Volatile
-        private var INSTANCE: Repository? = null
-        fun getInstance(
-            brickDao: BrickDao,
-            brickSetDao: BrickSetDao,
-            categoryDao: CategoryDao,
-            themeDao: ThemeDao,
-            rbrickrAPI: RebrickableService
-
-        ): Repository {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Repository(brickDao, brickSetDao, categoryDao, themeDao, rbrickrAPI).also { INSTANCE = it }
-            }
-        }
     }
 }

@@ -5,26 +5,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.gd05.brickr.R
-import com.gd05.brickr.api.RebrickableService
-import com.gd05.brickr.database.BrickrDatabase
-import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentFavoriteBinding
 import com.gd05.brickr.model.BrickSet
 import com.gd05.brickr.ui.search.FavoriteAdapter
-import kotlinx.coroutines.launch
 
 class FavoriteFragment : Fragment() {
     private var loadedSets: List<BrickSet> = emptyList()
     private lateinit var setsAdapter: FavoriteAdapter
     private lateinit var binding: FragmentFavoriteBinding
-    private lateinit var db: BrickrDatabase
-    private lateinit var repository: Repository
     private lateinit var listener: OnFavoriteClickListener
+
+    private val viewModel: FavoriteViewModel by viewModels { FavoriteViewModel.Factory }
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -33,22 +28,11 @@ class FavoriteFragment : Fragment() {
         } else {
             throw RuntimeException("$context must implement OnSearchClickListener")
         }
-        db = BrickrDatabase.getInstance(context)!!
-        repository = Repository.getInstance(
-            db.brickDao(),
-            db.brickSetDao(),
-            db.categoryDao(),
-            db.themeDao(),
-            RebrickableService
-        )
     }
 
     override fun onStart() {
         super.onStart()
         subscribeSetsUi(setsAdapter)
-        lifecycleScope.launch {
-            repository.publicFavoriteBrickSet()
-        }
     }
 
 
@@ -69,11 +53,6 @@ class FavoriteFragment : Fragment() {
                 listener.onFavoriteClickListener(it)
             },
             onLongClick = {
-                Toast.makeText(
-                    context,
-                    it.name,
-                    Toast.LENGTH_SHORT
-                ).show()
             },
             context = context
         )
@@ -82,7 +61,7 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun subscribeSetsUi(setsAdapter: FavoriteAdapter) {
-        repository.favoriteSets.observe(viewLifecycleOwner) { sets ->
+        viewModel.favoriteSets.observe(viewLifecycleOwner) { sets ->
             setsAdapter.updateData(sets)
         }
     }

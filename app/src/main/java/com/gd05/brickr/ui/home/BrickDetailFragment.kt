@@ -3,20 +3,21 @@ package com.gd05.brickr.ui.home
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.gd05.brickr.BrickrApplication
 import com.gd05.brickr.R
-import com.gd05.brickr.api.RebrickableService
-import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentBrickDetailBinding
+import com.gd05.brickr.model.Brick
+import com.gd05.brickr.model.BrickSet
 import kotlinx.coroutines.launch
 
 private const val TAG = "BrickDetailFragment"
@@ -30,8 +31,7 @@ class BrickDetailFragment : Fragment() {
 
     private var _binding: FragmentBrickDetailBinding? = null
     private val binding get() = _binding!!
-    private  lateinit var db: BrickrDatabase
-    private lateinit var  repository: Repository
+    private val viewModel: BrickDetailViewModel by viewModels { BrickDetailViewModel.Factory }
 
     private val args: BrickDetailFragmentArgs by navArgs()
 
@@ -39,45 +39,18 @@ class BrickDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        db = BrickrDatabase.getInstance(requireContext())!!
-        repository = Repository.getInstance(
-            db.brickDao(),
-            db.brickSetDao(),
-            db.categoryDao(),
-            db.themeDao(),
-            RebrickableService
-        )
         _binding = FragmentBrickDetailBinding.inflate(inflater, container, false)
         return binding.root
-    }
-
-    private fun getCategory(categoryId: Int): String {
-        var categoryName: String = ""
-
-        lifecycleScope.launch {
-            val category = repository.publicGetCategoryName(categoryId)
-            categoryName = category?.categoryName ?: "Unknown"
-            binding.brickDetailsCategory.text = categoryName
-        }
-
-        return categoryName
-    }
-
-    private fun getInventoryAmount(brickId: String ): Int {
-        var brickAmount: Int = 0
-
-        lifecycleScope.launch {
-            val brick = repository.publicGetBrick(brickId)
-            brickAmount = brick?.amount ?: 0
-            binding.brickDetailsAmount.text = brickAmount.toString()
-        }
-
-        return brickAmount
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val brick = args.brick
+        viewModel.brick = brick
+        subscribeBrickDetailUi()
+    }
+
+    private fun brickBinding(brick: Brick){
         binding.brickDetailsName.text = brick.name
         binding.brickDetailsYearFrom.text = brick.yearFrom.toString()
         binding.brickDetailsYearFromText.text = brick.yearFrom.toString()
@@ -85,8 +58,14 @@ class BrickDetailFragment : Fragment() {
         binding.brickDetailsYearToText.text = brick.yearTo.toString()
         binding.brickDetailsId.text = "#${brick.brickId.toString()}"
         binding.brickDetailsIdText.text = "#${brick.brickId.toString()}"
-        getInventoryAmount(brick.brickId)
-        binding.brickDetailsCategory.text = brick.categoryId?.let { getCategory(it) }
+        binding.brickDetailsAmount.text = brick.amount.toString()
+
+        //Nombre de la categoria
+        viewModel.getBrickCategory(brick.categoryId ?: 0).observe(viewLifecycleOwner) { categoryName ->
+            binding.brickDetailsCategory.text = categoryName
+        }
+
+
         binding.brickDetailsRebrickableButton.setOnClickListener {
             val urlIntent = Intent(Intent.ACTION_VIEW, Uri.parse(brick.brickUrl))
             startActivity(urlIntent)
@@ -101,34 +80,23 @@ class BrickDetailFragment : Fragment() {
         }
 
         binding.brickDetailsAdd.setOnClickListener {
-            lifecycleScope.launch {
-                brick.amount++
-                repository.publicInsertBrick(brick)
-                binding.brickDetailsAmount.text = brick.amount.toString()
-
-            }
+            viewModel.addBrick(brick)
         }
 
         binding.brickDetailsRemove.setOnClickListener {
-            lifecycleScope.launch {
-                if (brick.amount > 1) {
-                    brick.amount--
-                    repository.publicInsertBrick(brick)
-                    binding.brickDetailsAmount.text = brick.amount.toString()
-                }
-            }
+            viewModel.removeBrick(brick)
         }
 
         binding.brickDetailsDestroy.setOnClickListener {
-            lifecycleScope.launch {
-                brick.amount = 0
-                repository.publicInsertBrick(brick)
-                binding.brickDetailsAmount.text = brick.amount.toString()
-            }
+            viewModel.destroyBrick(brick)
         }
-
     }
 
+    private fun subscribeBrickDetailUi() {
+        viewModel.brickDetail.observe(viewLifecycleOwner) { brick ->
+            brick?.let { brickBinding(brick) }
+        }
+    }
 
     companion object {
         /**

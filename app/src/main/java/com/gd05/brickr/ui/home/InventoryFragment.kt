@@ -12,17 +12,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.gd05.brickr.BrickrApplication
 import com.gd05.brickr.R
-import com.gd05.brickr.api.RebrickableService
-import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentInventoryBinding
-import com.gd05.brickr.dummy.dummyBricks
 import com.gd05.brickr.model.Brick
-import com.gd05.brickr.model.Category
-import com.gd05.brickr.ui.search.SearchBricksAdapter
 import com.google.android.material.chip.Chip
 import kotlinx.coroutines.launch
 
@@ -44,8 +41,6 @@ class InventoryFragment : Fragment() {
     }
 
     //TODO declaramos la variable que va a contener la base de datos
-    private lateinit var db: BrickrDatabase
-    private lateinit var repository: Repository
     private lateinit var searchView: SearchView
     private var category: Int? = null
 
@@ -56,6 +51,7 @@ class InventoryFragment : Fragment() {
 
     //TODO variable para almacenar los favoritos del usuario por ahora vacia
     private var inventoryBricks: List<Brick> = emptyList()
+    private val viewModel: InventoryViewModel by viewModels { InventoryViewModel.Factory }
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -74,22 +70,20 @@ class InventoryFragment : Fragment() {
         inflater.inflate(R.menu.toolbar_home, menu)
         val searchItem = menu.findItem(R.id.search_view)
         searchView = searchItem.actionView as SearchView
-        Log.d("Se ha alcanzado este punto", "onCreateOptionsMenu")
 
         // Configura un listener para manejar los eventos de búsqueda
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 // Este método se llama cuando se envía la búsqueda (p. ej., al presionar "Enter").
                 // Puedes realizar la lógica de filtrado aquí.
-                Log.d("SearchSubmit", "Query submitted: $query")
-                loadSearchInventory(query, category)
+                viewModel.handleSearchSubmit(query)
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 // Este método se llama cuando el texto de búsqueda cambia.
                 // Puedes realizar la lógica de filtrado en tiempo real aquí.
-                loadSearchInventory(newText, category)
+                viewModel.handleSearchChange(newText)
                 return true
             }
         })
@@ -104,14 +98,6 @@ class InventoryFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        db = BrickrDatabase.getInstance(context)!!
-        repository = Repository.getInstance(
-            db.brickDao(),
-            db.brickSetDao(),
-            db.categoryDao(),
-            db.themeDao(),
-            RebrickableService
-        )
         if (context is OnInventoryClickListener) {
             listener = context
         } else {
@@ -130,38 +116,20 @@ class InventoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
         binding.chipGroup.setOnCheckedChangeListener { group, checkedId ->
             val chip = group.findViewById<Chip>(checkedId)
             if (chip != null) {
                 // Lógica según la chip seleccionada
-                handleChipSelection(chip)
+                viewModel.handleChipSelection(chip)
             } else {
-                category = null
-                loadInventory()
+                viewModel.resetCategory()
             }
         }
-        loadInventory()
         setUpRecyclerView()
     }
-
-    private fun handleChipSelection(chip: Chip) {
-        category  = when (chip.id) {
-            R.id.chip1 -> 1
-            R.id.chip2 -> 11
-            R.id.chip3 -> 9
-            R.id.chip4 -> 23
-            else -> null
-        }
-
-        if (category != null) {
-            loadFilterInventory(category)
-            Toast.makeText(requireContext(), "Seleccionaste: ${chip.text}", Toast.LENGTH_SHORT)
-                .show()
-        } else {
-            // Ninguna chip seleccionada, carga el inventario sin filtrar por categoría
-            loadInventory()
-        }
-    }
+    
 
     private fun setUpRecyclerView() {
         adapter = InventoryAdapter(
@@ -170,7 +138,6 @@ class InventoryFragment : Fragment() {
                 listener.onInventoryBrickClick(it)
             },
             onLongClick = {
-                //loadInventory()
                 Toast.makeText(
                     context,
                     "Long click on: " + it.name,
@@ -178,71 +145,31 @@ class InventoryFragment : Fragment() {
                 ).show()
             },
             onAddClick = {
-                lifecycleScope.launch {
-                    it.amount++
-                    repository.publicInsertBrick(it)
-                    loadInventory()
-                }
+                viewModel.addBrick(it)
             },
             onRemoveClick = {
-                lifecycleScope.launch {
-                    if(it.amount > 1){
-                        it.amount--
-                        repository.publicInsertBrick(it)
-                        loadInventory()
-                    }
-                }
+                viewModel.removeBrick(it)
             },
 
             onDestroyClick = {
-                lifecycleScope.launch {
-                    it.amount = 0
-                    repository.publicInsertBrick(it)
-                    loadInventory()
-                }
+                viewModel.destroyBrick(it)
             },
             context = context
         )
         with(binding) {
-            rvInventoryList.layoutManager = LinearLayoutManager(context)
-            rvInventoryList.adapter = adapter
-        }
+                rvInventoryList.layoutManager = LinearLayoutManager(context)
+                rvInventoryList.adapter = adapter
+            }
         android.util.Log.d("InventoryFragment", "setUpRecyclerView")
         subscribeInventoryBricksUi(adapter)
     }
 
     private fun subscribeInventoryBricksUi(adapter: InventoryAdapter) {
-        repository.inventoryBricks.observe(viewLifecycleOwner) { bricks ->
+        viewModel.inventoryBricks.observe(viewLifecycleOwner) { bricks ->
             adapter.updateData(bricks)
         }
     }
 
-    private fun loadInventory() {
-        lifecycleScope.launch { repository.publicGetInventoryBricks() }
-    }
-
-    //TODO metodo que llama a la bd para filtrar los bricks por categoria
-    private fun loadFilterInventory(category: Int?) {
-        lifecycleScope.launch {
-            if (category != null) {
-                repository.publicGetFilteredInventoryBricks(category)
-            } else {
-                repository.publicGetInventoryBricks()
-            }
-        }
-    }
-
-    private fun loadSearchInventory(query: String?, category: Int?) {
-        if (query != null) {
-            lifecycleScope.launch {
-                if (category != null) {
-                    repository.publicGetSearchedFilteredInventoryBricks(query, category)
-                } else {
-                    repository.publicGetSearchedInventoryBricks(query)
-                }
-            }
-        }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

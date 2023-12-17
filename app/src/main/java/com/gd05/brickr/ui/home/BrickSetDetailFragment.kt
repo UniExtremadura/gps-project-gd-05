@@ -1,23 +1,22 @@
 package com.gd05.brickr.ui.home
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.gd05.brickr.BrickrApplication
 import com.gd05.brickr.R
-import com.gd05.brickr.api.RebrickableService
-import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentBricksetDetailBinding
+import com.gd05.brickr.model.BrickSet
 import kotlinx.coroutines.launch
 
 /**
@@ -29,8 +28,7 @@ class BrickSetDetailFragment : Fragment() {
 
     private var _binding: FragmentBricksetDetailBinding? = null
     private val binding get() = _binding!!
-    private lateinit var db: BrickrDatabase
-    private lateinit var repository: Repository
+    private val viewModel: BrickSetDetailViewModel by viewModels { BrickSetDetailViewModel.Factory }
 
     private val args: BrickSetDetailFragmentArgs by navArgs()
 
@@ -39,39 +37,45 @@ class BrickSetDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        db = BrickrDatabase.getInstance(requireContext())!!
-        repository = Repository.getInstance(
-            db.brickDao(),
-            db.brickSetDao(),
-            db.categoryDao(),
-            db.themeDao(),
-            RebrickableService
-        )
         _binding = FragmentBricksetDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    private fun getTheme(themeId: Int): String {
-        var themeName: String = ""
 
-        lifecycleScope.launch {
-            val theme = repository.publicGetThemeName(themeId)
-            themeName = theme?.themeName ?: "Unknown"
-            binding.brickSetDetailsTheme.text = themeName
-        }
-
-        return themeName
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val brickSet = args.brickSet
+        viewModel.brickSet = brickSet
+        viewModel.toast.observe(viewLifecycleOwner) { text ->
+            text?.let {
+                Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+                viewModel.onToastShown()
+            }
+        }
+        subscribeBrickSetDetailUi()
+    }
+
+    private fun brickSetBinding(brickSet: BrickSet){
         binding.brickSetDetailsName.text = brickSet.name
         binding.brickSetDetailsYearReleased.text = brickSet.year.toString()
         binding.brickSetDetailsId.text = "#${brickSet.brickSetId.toString()}"
         binding.brickSetDetailsIdText.text = "#${brickSet.brickSetId.toString()}"
-        binding.brickSetDetailsTheme.text = brickSet.themeId?.let { getTheme(it) }
         binding.brickSetDetailsNumPartsText.text = brickSet.numParts.toString()
+
+        //Imagen del set
+        context?.let {
+            Glide.with(requireContext())
+                .load(brickSet.setImgUrl)
+                .placeholder(R.drawable.brick_placeholder)
+                .into(binding.coverImg)
+        }
+
+        //Nombre del Theme
+        viewModel.getBrickSetTheme(brickSet.themeId ?: 0).observe(viewLifecycleOwner) { themeName ->
+            binding.brickSetDetailsTheme.text = themeName
+        }
+        //Boton de compartir set
         binding.shareSetButton.setOnClickListener {
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
@@ -83,68 +87,27 @@ class BrickSetDetailFragment : Fragment() {
             startActivity(shareIntent)
         }
 
-        binding.toggleFavorite.isChecked = brickSet.isFavorite
 
-        /* Navigate to BrickSetPartsFragment when the user clicks on the "View Parts" button */
+        // Boton piezas de un set
         binding.puzzleButton.setOnClickListener {
             val action = BrickSetDetailFragmentDirections.actionBrickDetailSetDetailFragmentToBrickSetPartsFragment(brickSet)
-
-            view.findNavController().navigate(action)
+            view?.findNavController()?.navigate(action)
         }
 
-        // Set an OnClickListener to handle ToggleButton state changes
+        //Boton de favorito
+        binding.toggleFavorite.isChecked = viewModel.brickSet?.isFavorite ?: false
         binding.toggleFavorite.setOnClickListener {
-            // Toggle the isFavorite state when the button is clicked
-            brickSet.isFavorite = !brickSet.isFavorite
-
-            // Update the UI to reflect the new state
-            binding.toggleFavorite.isChecked = brickSet.isFavorite
-
-
-            // You can also perform any additional actions based on the new state here
-            if (brickSet.isFavorite) {
-
-                // Do something when the item is marked as favorite
-                lifecycleScope.launch {
-                    brickSet.isFavorite = true
-
-                    if(repository.publicGetThemeName(brickSet.themeId!!)  != null){
-                        repository.publicInsertBrickSet(brickSet)
-
-                        Toast.makeText(requireContext(), "Marcado como favorito", Toast.LENGTH_SHORT).show()
-                    }
-                    else{
-                        Toast.makeText(requireContext(), "El set no se encuentra disponible", Toast.LENGTH_SHORT).show()
-                    }
-
-                }
-            }else {
-                // Do something when the item is unmarked as favorite
-                lifecycleScope.launch {
-                    brickSet.isFavorite = false
-                    if(repository.publicGetThemeName(brickSet.themeId!!) != null){
-                        brickSet.isFavorite = false
-                        repository.publicInsertBrickSet(brickSet)
-                        Toast.makeText(requireContext(), "Desmarcado de favorito", Toast.LENGTH_SHORT).show()
-                    }
-                    else{
-                        Toast.makeText(requireContext(), "El set no se encuentra disponible", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-
-        }
-
-
-        context?.let {
-            Glide.with(requireContext())
-                .load(brickSet.setImgUrl)
-                .placeholder(R.drawable.brick_placeholder)
-                .into(binding.coverImg)
+            viewModel.toggleFavorite(brickSet)
         }
 
     }
 
+
+    private fun subscribeBrickSetDetailUi() {
+        viewModel.brickSetDetail.observe(viewLifecycleOwner) { brickset ->
+            brickset?.let { brickSetBinding(brickset) }
+        }
+    }
 
     companion object {
         /**

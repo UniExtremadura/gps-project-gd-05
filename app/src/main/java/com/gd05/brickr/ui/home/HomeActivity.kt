@@ -13,13 +13,12 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.gd05.brickr.BrickrApplication
 
 import com.gd05.brickr.R
 import com.gd05.brickr.api.RebrickableService
-import com.gd05.brickr.data.api.CategoriesRequest
 import com.gd05.brickr.data.api.ThemesRequest
 import com.gd05.brickr.data.mapper.toBrick
-import com.gd05.brickr.data.mapper.toCategory
 import com.gd05.brickr.data.mapper.toTheme
 import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.database.Repository
@@ -38,7 +37,6 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     OnFavoriteClickListener {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var db: BrickrDatabase
     private lateinit var repository: Repository
 
     /** We define the navController val in charge of handle everything related to navigation
@@ -50,14 +48,8 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        db = BrickrDatabase.getInstance(applicationContext)!!
-        repository = Repository.getInstance(
-            db.brickDao(),
-            db.brickSetDao(),
-            db.categoryDao(),
-            db.themeDao(),
-            RebrickableService
-        )
+        val appContainer = (application as BrickrApplication).appContainer
+        repository = appContainer.repository
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -124,19 +116,9 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         }
     }
 
-    override fun onBrickSetBricksClick(brickId : String){
-        BACKGROUND.submit{
-            RebrickableService.searchBrickById(brickId).execute().body().let {
-                val brick = it?.toBrick()
-                val action = BrickSetPartsFragmentDirections.actionBrickSetPartsFragmentToBrickDetailFragment(brick!!)
-                lifecycleScope.launch {
-                    navController.navigate(action)
-                }
-
-            }
-        }
-        /*val action = BrickSetPartsFragmentDirections.actionBrickSetPartsFragmentToBrickDetailFragment(brick)
-        navController.navigate(action)*/
+    override fun onBrickSetBricksClick(brick : Brick){
+        val action = BrickSetPartsFragmentDirections.actionBrickSetPartsFragmentToBrickDetailFragment(brick)
+        navController.navigate(action)
     }
 
     override fun onInventoryBrickClick(brick: Brick){
@@ -154,24 +136,17 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         navController.navigate(action)
     }
 
+    override fun onFavoriteClickListener(set: BrickSet) {
+        val action = FavoriteFragmentDirections.actionFavoriteFragmentToBrickDetailSetDetailFragment(set)
+        navController.navigate(action)
+    }
+
     private fun loadCategories(){
         lifecycleScope.launch { repository.publicGetCategories() }
     }
 
     private fun loadThemes(){
         lifecycleScope.launch { repository.publicGetThemes() }
-
-        BACKGROUND.submit {
-            val request = ThemesRequest(1,1000)
-            RebrickableService.getThemes(request).execute().body().let {
-                val loadedThemes = it?.results?.map { theme -> theme.toTheme() }
-                lifecycleScope.launch {
-                    loadedThemes?.forEach { theme ->
-                        db.themeDao().insertTheme(theme)
-                    }
-                }
-            }
-        }
     }
 
 
@@ -185,9 +160,6 @@ class HomeActivity : AppCompatActivity(), InventoryFragment.OnInventoryClickList
         //nothing to do
     }
 
-    override fun onFavoriteClickListener(set: BrickSet) {
-        val action = FavoriteFragmentDirections.actionFavoriteFragmentToBrickDetailSetDetailFragment(set)
-        navController.navigate(action)
-    }
+
 
 }

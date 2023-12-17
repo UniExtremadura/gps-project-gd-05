@@ -10,27 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.gd05.brickr.R
-import com.gd05.brickr.api.RebrickableAPI
-import com.gd05.brickr.api.RebrickableService
-import com.gd05.brickr.api.getRebrickableApi
-import com.gd05.brickr.data.api.BricksRequest
-import com.gd05.brickr.data.api.SearchRequest
-import com.gd05.brickr.data.mapper.toBrick
-import com.gd05.brickr.data.mapper.toSet
-import com.gd05.brickr.database.BrickrDatabase
-import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentSearchBinding
 import com.gd05.brickr.model.Brick
 import com.gd05.brickr.model.BrickSet
-import com.gd05.brickr.util.BACKGROUND
 import com.gd05.brickr.util.hideKeyboardFrom
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 // TODO: Inicializar con "sets" marcado
 //
@@ -45,9 +31,7 @@ class SearchFragment : Fragment() {
     private lateinit var listener: OnSearchClickListener
     private lateinit var searchView: SearchView
 
-    //Declaracion de la variable repository y base de datos para almacenar cache
-    private lateinit var repository: Repository
-    private lateinit var db: BrickrDatabase
+    private val viewModel: SearchViewModel by viewModels {SearchViewModel.Factory}
 
     interface OnSearchClickListener {
         fun onSearchBrickClick(brick: Brick)
@@ -61,15 +45,6 @@ class SearchFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        //Inicializacion de la base de datos y el repositorio
-        db = BrickrDatabase.getInstance(context)!!
-        repository = Repository.getInstance(
-            db.brickDao(),
-            db.brickSetDao(),
-            db.categoryDao(),
-            db.themeDao(),
-            RebrickableService
-        )
         if (context is OnSearchClickListener) {
             listener = context
         } else {
@@ -112,10 +87,10 @@ class SearchFragment : Fragment() {
     }
 
     fun loadElementsOnList() {
-        if (!loadedBricks.isEmpty() && binding.searchBricksButton.isChecked) {
+        if ( binding.searchBricksButton.isChecked) {
             repaintBricksToShow()
-        } else if (!loadedSets.isEmpty() && binding.searchSetsButton.isChecked) {
-            repaintSetsToShow()
+        } else if ( binding.searchSetsButton.isChecked) {
+           repaintSetsToShow()
         }
     }
 
@@ -141,10 +116,6 @@ class SearchFragment : Fragment() {
                 listener.onSearchBrickClick(it)
             },
             onLongClick = {
-                Toast.makeText(
-                    context, "Long click on: " + it.name,
-                    Toast.LENGTH_SHORT
-                ).show()
             },
             context = context
         )
@@ -157,11 +128,6 @@ class SearchFragment : Fragment() {
                 listener.onSearchSetClick(it)
             },
             onLongClick = {
-                Toast.makeText(
-                    context,
-                    "Long click on: " + it.name,
-                    Toast.LENGTH_SHORT
-                ).show()
             },
             context = context
         )
@@ -193,34 +159,28 @@ class SearchFragment : Fragment() {
         if (query == null)
             return
         if (binding.searchBricksButton.isChecked) {
-            searchBricks(query)
+            viewModel.searchBricks(query)
         } else if (binding.searchSetsButton.isChecked) {
-            searchSets(query)
+            viewModel.searchSets(query)
         } else {
-            Toast.makeText(context, "No se ha seleccionado un tipo de búsqueda", Toast.LENGTH_LONG)
-                .show()
+            viewModel.toast.observe(viewLifecycleOwner) {
+                Toast.makeText(context, "No se ha seleccionado un tipo de búsqueda", Toast.LENGTH_LONG).show()
+                viewModel.onToastShown()
+            }
         }
 
     }
 
-    private fun searchSets(query: String) {
-        lifecycleScope.launch {repository.publicSearchBrickSets(query)  }
-    }
-
-    private fun searchBricks(query: String) {
-        //Llamada a la funcion del repositorio para buscar piezas primero en la BD sino recurre a la API
-        lifecycleScope.launch {repository.publicSearchBricks(query)  }
-    }
 
     //Funcion para suscribirse a los cambios en la lista de piezas, cuando se produzca un cambio se actualiza el adapter
     private fun subscribeBricksUi(adapter: SearchBricksAdapter) {
-        repository.searchedBricks.observe(viewLifecycleOwner) { bricks ->
+        viewModel.searchedBricks.observe(viewLifecycleOwner) { bricks ->
             adapter.updateData(bricks)
         }
     }
 
     private fun subscribeSetsUi(adapter: SearchSetsAdapter) {
-        repository.searchedSets.observe(viewLifecycleOwner) { sets ->
+        viewModel.searchedSets.observe(viewLifecycleOwner) { sets ->
             adapter.updateData(sets)
         }
     }

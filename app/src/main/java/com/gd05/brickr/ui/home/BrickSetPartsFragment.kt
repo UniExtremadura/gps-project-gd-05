@@ -11,9 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.gd05.brickr.BrickrApplication
 import com.gd05.brickr.api.RebrickableService
 import com.gd05.brickr.data.mapper.toBrick
-import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.database.Repository
 import com.gd05.brickr.databinding.FragmentBricksetPartsBinding
 import com.gd05.brickr.model.Brick
@@ -29,10 +29,9 @@ class BrickSetPartsFragment : Fragment() {
     private lateinit var listener: OnBrickSetPartsClickListener
 
     interface OnBrickSetPartsClickListener {
-        fun onBrickSetBricksClick(brick: String)
+        fun onBrickSetBricksClick(brick: Brick)
     }
 
-    private lateinit var db: BrickrDatabase
     private lateinit var repository: Repository
     private var _binding: FragmentBricksetPartsBinding? = null
     private val binding get() = _binding!!
@@ -64,14 +63,8 @@ class BrickSetPartsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentBricksetPartsBinding.inflate(inflater, container, false)
-        db = context?.let { BrickrDatabase.getInstance(it) }!!
-        repository = Repository.getInstance(
-            db.brickDao(),
-            db.brickSetDao(),
-            db.categoryDao(),
-            db.themeDao(),
-            RebrickableService
-        )
+        val appContainer = (this.activity?.application as BrickrApplication).appContainer
+        repository = appContainer.repository
         _binding!!.setBricksRemoveButton.setOnClickListener {
             onRemoveClick()
         }
@@ -106,7 +99,7 @@ class BrickSetPartsFragment : Fragment() {
                 // Iteramos sobre la lista de piezas del set
                 for (apiBrick in bricksetBricks) {
                     //Buscamos la pieza en nuestra base de datos
-                    val localBrick = repository.publicGetBrick(apiBrick.brickId)
+                    val localBrick = repository.publicGetBrickById(apiBrick.brickId)
                     //Si la pieza existe en el inventario, se suma la cantidad, si no, se inserta la nueva pieza
                     if(localBrick == null){
                         localBricksList.add(apiBrick)
@@ -140,7 +133,7 @@ class BrickSetPartsFragment : Fragment() {
                 val localBricks = ArrayList<Brick>()
 
                 for (apiBrick in bricksetBricks) {
-                    val localBrick = repository.publicGetBrick(apiBrick.brickId)
+                    val localBrick = repository.publicGetBrickById(apiBrick.brickId)
 
                     // Si no lo tenemos en el inventario o no hay suficiente cantidad
                     if (localBrick == null || apiBrick.amount > localBrick.amount) {
@@ -171,7 +164,7 @@ class BrickSetPartsFragment : Fragment() {
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
                 for (apiBrick in bricksetBricks) {
-                    val localBrick = repository.publicGetBrick(apiBrick.brickId)
+                    val localBrick = repository.publicGetBrickById(apiBrick.brickId)
                     // Si no lo tenemos en el inventario o no hay suficiente cantidad
                     if (localBrick == null || apiBrick.amount > localBrick.amount) {
                         context?.let { showMessage("No tienes todas las piezas", it) }
@@ -194,7 +187,7 @@ class BrickSetPartsFragment : Fragment() {
         bricksetBricks.forEach { apiBrick ->
             run {
                 lifecycleScope.launch {
-                    val localBrick = repository.publicGetBrick(apiBrick.brickId)
+                    val localBrick = repository.publicGetBrickById(apiBrick.brickId)
                     if (localBrick != null)
                         localAmounts.put(apiBrick.brickId, localBrick.amount)
                     else
@@ -258,7 +251,7 @@ class BrickSetPartsFragment : Fragment() {
             amounts = amounts,
             localAmount = localAmounts,
             onClick = {
-                listener.onBrickSetBricksClick(it.brickId!!)
+                listener.onBrickSetBricksClick(it)
             },
             onLongClick = {
                 Toast.makeText(
