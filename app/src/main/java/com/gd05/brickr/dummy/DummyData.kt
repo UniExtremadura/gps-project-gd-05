@@ -29,3 +29,17 @@ val favoriteSet: List<BrickSet> = listOf(
         true
     )
 )
+
+val favoriteSet: List<BrickSet> = listOf(
+    BrickSet(
+        "75292-1",
+        "The Razor Crest",
+        2020,
+        1,
+        1023,
+        "https://cdn.rebrickable.com/media/sets/75292-1.jpg",
+        "https://rebrickable.com/sets/75292-1/the-razor-crest/",
+        "https://cdn.rebrickable.com/media/sets/75292-1/20200901-1650-01.jpg",
+        true
+    )
+)
