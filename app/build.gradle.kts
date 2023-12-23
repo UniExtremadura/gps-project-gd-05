@@ -42,6 +42,7 @@ android {
 
 dependencies {
 
+    implementation("androidx.test.espresso:espresso-contrib:3.5.1")
     val room_version = "2.5.0"
 
     implementation("androidx.room:room-runtime:$room_version")
