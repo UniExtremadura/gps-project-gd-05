@@ -23,14 +23,14 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-class VerificarPiezasTest {
+class VerificarPiezasTests {
 
     @Rule
     @JvmField
     var mActivityScenarioRule = ActivityScenarioRule(HomeActivity::class.java)
 
     @Test
-    fun verificarPiezasTest() {
+    fun verificarPiezasTests() {
         val appCompatToggleButton = onView(
             allOf(
                 withId(R.id.search_sets_button), withText("Sets"),
@@ -48,7 +48,7 @@ class VerificarPiezasTest {
 
         val actionMenuItemView = onView(
             allOf(
-                withId(R.id.search_view), withContentDescription("B�squeda\n"),
+                withId(R.id.search_view), withContentDescription("Búsqueda\n"),
                 childAtPosition(
                     childAtPosition(
                         withId(R.id.toolbar),
@@ -77,11 +77,12 @@ class VerificarPiezasTest {
                 isDisplayed()
             )
         )
-        searchAutoComplete.perform(replaceText("Mickey's boat"), closeSoftKeyboard())
+        searchAutoComplete.perform(replaceText("Armored Batman"), closeSoftKeyboard())
 
         val searchAutoComplete2 = onView(
             allOf(
-                withId(com.google.android.material.R.id.search_src_text), withText("Mickey's boat"),
+                withId(com.google.android.material.R.id.search_src_text),
+                withText("Armored Batman"),
                 childAtPosition(
                     allOf(
                         withId(com.google.android.material.R.id.search_plate),
@@ -96,7 +97,7 @@ class VerificarPiezasTest {
             )
         )
         searchAutoComplete2.perform(pressImeActionButton())
-
+        Thread.sleep(5000)
         val cardView = onView(
             allOf(
                 withId(R.id.cv_Item),
@@ -114,7 +115,7 @@ class VerificarPiezasTest {
             )
         )
         cardView.perform(click())
-
+        Thread.sleep(2000)
         val materialButton = onView(
             allOf(
                 withId(R.id.puzzle_button), withText("Bricks"),
@@ -129,7 +130,7 @@ class VerificarPiezasTest {
             )
         )
         materialButton.perform(click())
-
+        Thread.sleep(2000)
         val materialButton2 = onView(
             allOf(
                 withId(R.id.set_bricks_add_button),
@@ -147,7 +148,16 @@ class VerificarPiezasTest {
             )
         )
         materialButton2.perform(click())
-
+        Thread.sleep(5000)
+        val textView = onView(
+            allOf(
+                withId(R.id.brickset_part_amount), withText("2 / 2"),
+                withParent(withParent(withId(R.id.cv_Item))),
+                isDisplayed()
+            )
+        )
+        textView.check(matches(withText("2 / 2")))
+        Thread.sleep(2000)
         val materialButton3 = onView(
             allOf(
                 withId(R.id.set_bricks_verify_button),
@@ -165,16 +175,7 @@ class VerificarPiezasTest {
             )
         )
         materialButton3.perform(click())
-
-        val textView = onView(
-            allOf(
-                withId(R.id.brickset_part_amount), withText("1 / 1"),
-                withParent(withParent(withId(R.id.cv_Item))),
-                isDisplayed()
-            )
-        )
-        textView.check(matches(withText("1 / 1")))
-
+        Thread.sleep(5000)
         val button = onView(
             allOf(
                 withId(R.id.set_bricks_verify_button),
