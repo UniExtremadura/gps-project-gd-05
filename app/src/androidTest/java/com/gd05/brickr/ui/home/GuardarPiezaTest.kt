@@ -3,6 +3,7 @@ package com.gd05.brickr.ui.home
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
@@ -29,7 +30,7 @@ class GuardarPiezaTest {
     var mActivityScenarioRule = ActivityScenarioRule(HomeActivity::class.java)
 
     @Test
-    fun guardarPiezaTest2() {
+    fun guardarPiezaTest() {
         val appCompatToggleButton = onView(
             allOf(
                 withId(R.id.search_bricks_button), withText("Piezas"),
@@ -47,7 +48,7 @@ class GuardarPiezaTest {
 
         val actionMenuItemView = onView(
             allOf(
-                withId(R.id.search_view), withContentDescription("Búsqueda\n"),
+                withId(R.id.search_view), withContentDescription("B�squeda\n"),
                 childAtPosition(
                     childAtPosition(
                         withId(R.id.toolbar),
@@ -76,27 +77,9 @@ class GuardarPiezaTest {
                 isDisplayed()
             )
         )
-        searchAutoComplete.perform(replaceText("Batman"), closeSoftKeyboard())
-
-        val searchAutoComplete2 = onView(
-            allOf(
-                withId(com.google.android.material.R.id.search_src_text), withText("Batman"),
-                childAtPosition(
-                    allOf(
-                        withId(com.google.android.material.R.id.search_plate),
-                        childAtPosition(
-                            withId(com.google.android.material.R.id.search_edit_frame),
-                            1
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        searchAutoComplete2.perform(pressImeActionButton())
-        Thread.sleep(5000)
-        val cardView = onView(
+        searchAutoComplete.perform(replaceText("batman"), closeSoftKeyboard())
+        Thread.sleep(2000)
+        val cardView = onData(
             allOf(
                 withId(R.id.cv_Item),
                 childAtPosition(
@@ -113,7 +96,7 @@ class GuardarPiezaTest {
             )
         )
         cardView.perform(click())
-
+        Thread.sleep(2000)
         val materialButton = onView(
             allOf(
                 withId(R.id.brick_details_add), withText("+"),
@@ -128,24 +111,6 @@ class GuardarPiezaTest {
         )
         materialButton.perform(scrollTo(), click())
 
-        val appCompatImageButton = onView(
-            allOf(
-                withContentDescription("Navigate up"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.toolbar),
-                        childAtPosition(
-                            withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
-                            2
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatImageButton.perform(click())
-        Thread.sleep(2000)
         val bottomNavigationItemView = onView(
             allOf(
                 withId(R.id.InventoryFragment), withContentDescription("Inventario"),
@@ -160,7 +125,7 @@ class GuardarPiezaTest {
             )
         )
         bottomNavigationItemView.perform(click())
-        Thread.sleep(2000)
+
         val textView = onView(
             allOf(
                 withId(R.id.inventory_amount), withText("1"),
