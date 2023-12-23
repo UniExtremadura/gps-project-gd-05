@@ -6,7 +6,11 @@
 <<<<<<< HEAD
         <entry key="-392842220">
 =======
+<<<<<<< HEAD
+        <entry key="-392842220">
+=======
         <entry key="-1117522868">
+>>>>>>> test/develop
 >>>>>>> test/develop
           <value>
             <AndroidTestResultsTableState>
@@ -15,6 +19,10 @@
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_2_API_34" value="120" />
                   <entry key="Tests" value="360" />
+<<<<<<< HEAD
+                  <entry key="Xiaomi Redmi Note 7" value="120" />
+=======
+>>>>>>> test/develop
                 </map>
               </option>
             </AndroidTestResultsTableState>
