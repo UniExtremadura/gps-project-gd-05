@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.gd05.brickr.R
 import com.gd05.brickr.database.BrickrDatabase
 import com.gd05.brickr.databinding.FragmentFavoriteBinding
+import com.gd05.brickr.dummy.favoriteSet
 import com.gd05.brickr.model.BrickSet
 import com.gd05.brickr.ui.search.FavoriteAdapter
 import kotlinx.coroutines.launch
@@ -25,6 +26,7 @@ class FavoriteFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
         if (context is OnFavoriteClickListener) {
             listener = context
         } else {
@@ -35,6 +37,9 @@ class FavoriteFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        Thread.sleep(1000)
+        lifecycleScope.launch { database.brickSetDao().insert(favoriteSet[0]) }
+        Thread.sleep(1000)
         lifecycleScope.launch {
             loadedSets = database.brickSetDao().findFavorites()
             setsAdapter.updateData(loadedSets)
