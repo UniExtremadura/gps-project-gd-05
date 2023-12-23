@@ -47,7 +47,11 @@ class TestGuardarPiezasSetEnInventario {
 
         val actionMenuItemView = onView(
             allOf(
+<<<<<<< HEAD
                 withId(R.id.search_view), withContentDescription("Búsqueda\n"),
+=======
+                withId(R.id.search_view), withContentDescription("B�squeda\n"),
+>>>>>>> 1ad023d35bc562c569ad8a0f47edad0d71c435d6
                 childAtPosition(
                     childAtPosition(
                         withId(R.id.toolbar),
@@ -96,7 +100,11 @@ class TestGuardarPiezasSetEnInventario {
             )
         )
         searchAutoComplete2.perform(pressImeActionButton())
+<<<<<<< HEAD
         Thread.sleep(5000)
+=======
+
+>>>>>>> 1ad023d35bc562c569ad8a0f47edad0d71c435d6
         val cardView = onView(
             allOf(
                 withId(R.id.cv_Item),
@@ -114,7 +122,11 @@ class TestGuardarPiezasSetEnInventario {
             )
         )
         cardView.perform(click())
+<<<<<<< HEAD
         Thread.sleep(2000)
+=======
+
+>>>>>>> 1ad023d35bc562c569ad8a0f47edad0d71c435d6
         val materialButton = onView(
             allOf(
                 withId(R.id.puzzle_button), withText("Bricks"),
@@ -129,7 +141,11 @@ class TestGuardarPiezasSetEnInventario {
             )
         )
         materialButton.perform(click())
+<<<<<<< HEAD
         Thread.sleep(2000)
+=======
+
+>>>>>>> 1ad023d35bc562c569ad8a0f47edad0d71c435d6
         val materialButton2 = onView(
             allOf(
                 withId(R.id.set_bricks_add_button),
@@ -147,7 +163,11 @@ class TestGuardarPiezasSetEnInventario {
             )
         )
         materialButton2.perform(click())
+<<<<<<< HEAD
         Thread.sleep(2000)
+=======
+
+>>>>>>> 1ad023d35bc562c569ad8a0f47edad0d71c435d6
         val bottomNavigationItemView = onView(
             allOf(
                 withId(R.id.InventoryFragment), withContentDescription("Inventario"),
@@ -162,7 +182,11 @@ class TestGuardarPiezasSetEnInventario {
             )
         )
         bottomNavigationItemView.perform(click())
+<<<<<<< HEAD
         Thread.sleep(2000)
+=======
+
+>>>>>>> 1ad023d35bc562c569ad8a0f47edad0d71c435d6
         val textView = onView(
             allOf(
                 withId(R.id.inventory_amount), withText("2"),
